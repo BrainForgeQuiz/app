@@ -1,10 +1,22 @@
-### GET request to example server
-POST http://localhost:3000/auth
+### POST request to server for Login
+POST http://localhost:3000/auth/login
 content-type: application/json
 
 {
   "username": "testuser",
   "password": "testpassword"
+}
+
+###
+
+### POST request to server for Register
+POST http://localhost:3000/auth/register
+content-type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword",
+  "email": "testmail"
 }
 
 ###
