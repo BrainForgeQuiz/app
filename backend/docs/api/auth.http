@@ -1,0 +1,10 @@
+### GET request to example server
+POST http://localhost:3000/auth
+content-type: application/json
+
+{
+  "username": "testuser",
+    "password": "testpassword"
+}
+
+###

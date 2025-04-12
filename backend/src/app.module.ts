@@ -3,9 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DbService } from './db/db.service';
 import { DbModule } from './db/db.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { QuizModule } from './quiz/quiz.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
-  imports: [DbModule],
+  imports: [
+    DbModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    QuizModule,
+    QuestionModule,
+  ],
   controllers: [AppController],
   providers: [AppService, DbService],
 })
