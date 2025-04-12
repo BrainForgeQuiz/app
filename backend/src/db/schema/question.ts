@@ -1,8 +1,11 @@
-import { numeric, pgTable, text } from 'drizzle-orm/pg-core';
+import { numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { id } from '../schemaHelper';
+import { QuizTable } from './quiz';
 
 const points = numeric().notNull().default('1');
-const quizId = text().notNull();
+const quizId = uuid()
+  .references(() => QuizTable.id)
+  .notNull();
 const question = text().notNull();
 
 export const SimpleQuestionTable = pgTable('simple_questions', {
