@@ -1,11 +1,12 @@
-import { pgTable, text } from 'drizzle-orm/pg-core';
-import { id } from '../schemaHelper';
+import { numeric, pgTable, text } from 'drizzle-orm/pg-core';
+import { createdAt, id, updatedAt } from '../schemaHelper';
 
 export const UserTable = pgTable('users', {
   id,
   username: text().notNull(),
   email: text().notNull(),
   password: text().notNull(),
-  createdAt: text().notNull(),
-  updatedAt: text().notNull(),
+  createdAt,
+  updatedAt,
+  points: numeric().notNull().default('0'),
 });
