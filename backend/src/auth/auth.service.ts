@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../entity/user';
 import { SaveUserResponse, UserInDBResponse } from '../responses/db.response';
 import { TokenResponse } from '../responses/token.response';
-import { hash, genSalt } from 'bcrypt';
+import { hash, genSalt, compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -54,6 +54,20 @@ export class AuthService {
   }
 
   /**
+   * Compare Password
+   * @description this function is using the bcrypt to compare the password
+   * @param {string} password - password for the user
+   * @param {string} hashedPassword - hashed password for the user
+   * @return {Promise<boolean>} - this variable helps you to test if password is correct
+   */
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await compare(password, hashedPassword);
+  }
+
+  /**
    * Save User
    * @description this function is using the dbService to save the user in the UserTable
    * @param {string} username - username for the user
@@ -92,32 +106,56 @@ export class AuthService {
     password: string,
     email: string,
   ): Promise<TokenResponse> {
-    const userRes = await this.findUser(username, email);
+    const userRes: UserInDBResponse = await this.findUser(username, email);
     if (userRes.inDb) {
-      throw new Error('User Already in db');
+      return {
+        success: false,
+        error: 'User already exists',
+        data: null,
+      };
     }
+    const hashedPassword = await this.hashPassword(password);
     const res: SaveUserResponse = await this.saveUser(
       username,
-      password,
+      hashedPassword,
       email,
     );
     if (!res.success) {
-      throw new Error('User was not saved');
+      return {
+        success: false,
+        error: 'User was not saved',
+        data: null,
+      };
     }
     const userData: UserInDBResponse = await this.findUser(username);
     if (!userData.inDb) {
-      throw new Error('User was not found');
+      return {
+        success: false,
+        error: 'User was not saved',
+        data: null,
+      };
     }
     if (!userData.user) {
-      throw new Error('User was not found');
+      return {
+        success: false,
+        error: 'No user was saved',
+        data: null,
+      };
     }
     const user: User = userData.user;
     const payload = { sub: user.id, username: user.username };
     const token: string = await this.jwtService.signAsync(payload);
     if (!token) {
-      throw new Error('Token was not created');
+      return {
+        success: false,
+        error: 'Token was not created',
+        data: null,
+      };
     }
-    return { token: token };
+    return {
+      success: true,
+      data: token,
+    };
   }
 
   /**
@@ -132,18 +170,33 @@ export class AuthService {
     if (userData.inDb) {
       if (userData.user) {
         const user: User = userData.user;
-        if (user.password == password) {
+        const validateUser: boolean = await this.comparePassword(
+          password,
+          user.password,
+        );
+        if (validateUser) {
           const payload = { sub: user.id, username: user.username };
           return {
-            token: await this.jwtService.signAsync(payload),
+            success: true,
+            data: await this.jwtService.signAsync(payload),
           };
         }
-        throw new Error('Wrong password');
+        return {
+          success: false,
+          error: 'Invalid credentials',
+          data: null,
+        };
       }
-      throw new Error(
-        'Idk how you have done that, but user is in DB, but user has no data',
-      );
+      return {
+        success: false,
+        error: 'User data not found',
+        data: null,
+      };
     }
-    throw new Error('No user found');
+    return {
+      success: false,
+      error: 'User was not found',
+      data: null,
+    };
   }
 }
