@@ -1,9 +1,4 @@
-import {
-  Body,
-  Controller,
-  NotImplementedException,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import Response from '../responses/response';
 import { LoginDto } from './dto/login.dto';
@@ -14,9 +9,8 @@ import { RegisterDto } from './dto/register.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  //signUp
   /**
-   * Sign up endpoint
+   * Register endpoint
    * @description This function creates a user in the database
    * @param {RegisterDto} dto - The Register data transfer object
    * @returns {Response} An object that contains the signup response
