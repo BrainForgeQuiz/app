@@ -22,3 +22,9 @@ content-type: application/json
 
 ###
 
+
+### Get User Info
+GET http://localhost:3000/auth/me
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDQ2MjM0NzcsImV4cCI6MTc0NDYyMzQ4N30.n2xrJMy79B-VuZYiCrg2RubXKZixCXOh0dIfEX-dV18
+
+###
