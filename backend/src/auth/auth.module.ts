@@ -11,7 +11,7 @@ import * as process from 'node:process';
     JwtModule.register({
       global: true,
       secret: process.env.SECRET,
-      signOptions: { expiresIn: '300s' },
+      signOptions: { expiresIn: '3600s' },
     }),
   ],
 })
