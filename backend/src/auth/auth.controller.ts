@@ -46,13 +46,20 @@ export class AuthController {
   @Post('login')
   async signIn(@Body() dto: LoginDto): Promise<Response> {
     try {
-      const token: TokenResponse = await this.authService.signIn(
+      const res: TokenResponse = await this.authService.signIn(
         dto.username,
         dto.password,
       );
+      if (res.success) {
+        return {
+          success: true,
+          data: res.data,
+        };
+      }
       return {
-        success: true,
-        data: token.token,
+        success: false,
+        error: res.error,
+        data: null,
       };
     } catch (e) {
       console.log(e);
