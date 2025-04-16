@@ -4,7 +4,8 @@ import Response from '../responses/response';
 import { LoginDto } from './dto/login.dto';
 import { TokenResponse } from '../responses/token.response';
 import { RegisterDto } from './dto/register.dto';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -47,37 +48,50 @@ export class AuthController {
     };
   }
 
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/logout')
+  async logout(@Request() req) {
+    return req.logout();
+  }
+
   /**
    * Login endpoint
    * @description This function creates a jwt, if the user credentials are that can be used for further auth
    * @param {LoginDto} dto - The login data transfer object
    * @returns {Response} An object that contains the login response
    */
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async signIn(@Body() dto: LoginDto): Promise<Response> {
-    try {
-      const res: TokenResponse = await this.authService.signIn(
-        dto.username,
-        dto.password,
-      );
-      if (res.success) {
+  async login(@Request() req) {
+    return req.user;
+  }
+
+  /*
+    async signIn(@Body() dto: LoginDto): Promise<Response> {
+
+      try {
+        const res: TokenResponse = await this.authService.signIn(
+          dto.username,
+          dto.password,
+        );
+        if (res.success) {
+          return {
+            success: true,
+            data: res.data,
+          };
+        }
         return {
-          success: true,
-          data: res.data,
+          success: false,
+          error: res.error,
+          data: null,
+        };
+      } catch (e) {
+        console.log(e);
+        return {
+          success: false,
+          error: 'Internal server error',
+          data: null,
         };
       }
-      return {
-        success: false,
-        error: res.error,
-        data: null,
-      };
-    } catch (e) {
-      console.log(e);
-      return {
-        success: false,
-        error: 'Internal server error',
-        data: null,
-      };
-    }
-  }
+  }*/
 }
