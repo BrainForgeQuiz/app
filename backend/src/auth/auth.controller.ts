@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import Response from '../responses/response';
 import { LoginDto } from './dto/login.dto';
@@ -6,6 +13,7 @@ import { TokenResponse } from '../responses/token.response';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,12 +47,11 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   getUserInfo(@Request() request) {
     return {
-      success: true,
-      data: request.user,
+      request: request.user,
     };
   }
 
@@ -62,36 +69,30 @@ export class AuthController {
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return req.user;
-  }
-
-  /*
-    async signIn(@Body() dto: LoginDto): Promise<Response> {
-
-      try {
-        const res: TokenResponse = await this.authService.signIn(
-          dto.username,
-          dto.password,
-        );
-        if (res.success) {
-          return {
-            success: true,
-            data: res.data,
-          };
-        }
+  async signIn(@Body() dto: LoginDto): Promise<Response> {
+    try {
+      const res: TokenResponse = await this.authService.signIn(
+        dto.username,
+        dto.password,
+      );
+      if (res.success) {
         return {
-          success: false,
-          error: res.error,
-          data: null,
-        };
-      } catch (e) {
-        console.log(e);
-        return {
-          success: false,
-          error: 'Internal server error',
-          data: null,
+          success: true,
+          data: res.data,
         };
       }
-  }*/
+      return {
+        success: false,
+        error: res.error,
+        data: null,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        success: false,
+        error: 'Internal server error',
+        data: null,
+      };
+    }
+  }
 }
