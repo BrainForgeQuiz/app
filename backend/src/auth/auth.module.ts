@@ -11,7 +11,7 @@ import { JwtStrategy } from './jwt.strategy';
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
   imports: [
-    PassportModule,
+    PassportModule.register({ session: true }),
     JwtModule.register({
       global: true,
       secret: process.env.SECRET,

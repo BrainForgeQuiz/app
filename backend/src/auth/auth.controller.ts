@@ -51,7 +51,7 @@ export class AuthController {
   @Get('me')
   getUserInfo(@Request() request) {
     return {
-      request: request.user,
+      req: request.user,
     };
   }
 
