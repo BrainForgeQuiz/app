@@ -1,9 +1,9 @@
-import { quizTopicEnum, quizTypes } from '../../db/schema/quiz';
+import { quizTopicEnum } from '../../db/schema/quiz';
 
 export class Quiz {
   id: string;
   name: string;
-  topic: quizTypes;
+  topic: typeof quizTopicEnum;
   userId: string;
   createdAt: Date;
   updatedAt: Date;

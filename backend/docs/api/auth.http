@@ -29,3 +29,11 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwY
 
 
 ###
+
+
+### Logout
+POST http://localhost:3000/auth/logout
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUwOTc0MTEsImV4cCI6MTc0NTEwMTAxMX0.y3wCXPIEVA9ljulO-DsCBuivsq1AhN1omjyMBDMqAQ0
+
+
+###
