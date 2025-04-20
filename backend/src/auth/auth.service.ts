@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
 import { UserTable } from '../db/schema/user';
 import { eq, or } from 'drizzle-orm';
@@ -7,12 +7,16 @@ import { User } from '../entity/user';
 import { SaveUserResponse, UserInDBResponse } from '../responses/db.response';
 import { TokenResponse } from '../responses/token.response';
 import { hash, genSalt, compare } from 'bcrypt';
+import refConfig from './config/ref.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly dbService: DbService,
     private readonly jwtService: JwtService,
+    @Inject(refConfig.KEY)
+    private readonly refConfigOp: ConfigType<typeof refConfig>,
   ) {}
 
   /**
@@ -176,9 +180,17 @@ export class AuthService {
         );
         if (validateUser) {
           const payload = { sub: user.id, username: user.username };
+          const token = await this.jwtService.signAsync(payload);
+          const refToken = await this.jwtService.signAsync(
+            payload,
+            this.refConfigOp,
+          );
           return {
             success: true,
-            data: await this.jwtService.signAsync(payload),
+            data: {
+              token,
+              refToken,
+            },
           };
         }
         return {
