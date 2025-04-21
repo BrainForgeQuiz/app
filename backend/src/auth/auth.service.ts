@@ -98,6 +98,56 @@ export class AuthService {
   }
 
   /**
+   * Generate Token
+   * @description this function is using the jwtService to generate the token for the user
+   * @param {User} user - user for the token
+   * @return {string} - this variable helps you to test if token was created
+   */
+  async refToken(user: User): Promise<TokenResponse> {
+    const payload = { sub: user.id, username: user.username };
+    const token = await this.jwtService.signAsync(payload, this.refConfigOp);
+    if (!token) {
+      return {
+        success: false,
+        error: 'Token was not created',
+        data: null,
+      };
+    }
+    return {
+      success: true,
+      data: {
+        token: token,
+      },
+    };
+  }
+
+  /**
+   * Token Generation
+   * @description this function is using the jwtService to generate the token for the user
+   * @param {User} user - user for the token
+   * @return {Promise<TokenResponse>} - this variable helps you to test if token was created
+   */
+  async tokenGen(user: User): Promise<TokenResponse> {
+    const payload = { sub: user.id, username: user.username };
+    const token = await this.jwtService.signAsync(payload);
+    const refToken = await this.jwtService.signAsync(payload, this.refConfigOp);
+    if (!token || !refToken) {
+      return {
+        success: false,
+        error: 'Token was not created',
+        data: null,
+      };
+    }
+    return {
+      success: true,
+      data: {
+        token,
+        refToken,
+      },
+    };
+  }
+
+  /**
    * Sign Up
    * @description the function for sign up
    * @param {string} username - username for the user
@@ -146,20 +196,7 @@ export class AuthService {
         data: null,
       };
     }
-    const user: User = userData.user;
-    const payload = { sub: user.id, username: user.username };
-    const token: string = await this.jwtService.signAsync(payload);
-    if (!token) {
-      return {
-        success: false,
-        error: 'Token was not created',
-        data: null,
-      };
-    }
-    return {
-      success: true,
-      data: token,
-    };
+    return await this.tokenGen(userData.user);
   }
 
   /**
@@ -179,19 +216,7 @@ export class AuthService {
           user.password,
         );
         if (validateUser) {
-          const payload = { sub: user.id, username: user.username };
-          const token = await this.jwtService.signAsync(payload);
-          const refToken = await this.jwtService.signAsync(
-            payload,
-            this.refConfigOp,
-          );
-          return {
-            success: true,
-            data: {
-              token,
-              refToken,
-            },
-          };
+          return await this.tokenGen(user);
         }
         return {
           success: false,

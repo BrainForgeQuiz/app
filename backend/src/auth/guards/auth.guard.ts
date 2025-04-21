@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import TokenPayload from '../dto/token.payload';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,12 +17,13 @@ export class AuthGuard implements CanActivate {
       return false;
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload: TokenPayload = await this.jwtService.verifyAsync(token);
       req.user = {
         userId: payload.sub,
         username: payload.username,
       };
     } catch (error) {
+      console.error('Error verifying token:', error);
       return false;
     }
     return true;

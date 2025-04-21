@@ -6,6 +6,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request } from 'express';
+import { RefAuthGuard } from './guards/ref-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +43,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getUserInfo(@Req() req: Request) {
+    return req.user;
+  }
+
+  @UseGuards(RefAuthGuard)
+  @Post('refresh')
+  refresh(@Req() req: Request) {
     return req.user;
   }
 

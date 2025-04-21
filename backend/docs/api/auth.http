@@ -25,15 +25,21 @@ content-type: application/json
 
 ### Get User Info
 GET http://localhost:3000/auth/me
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUwOTc0MTEsImV4cCI6MTc0NTEwMTAxMX0.y3wCXPIEVA9ljulO-DsCBuivsq1AhN1omjyMBDMqAQ0
-
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUyNzIxOTEsImV4cCI6MTc0NTI3MzA5MX0.YgL6cfsnS5UGavACL2O3PVFoxOFMyf7L5Z1VGPOpe7s
 
 ###
+
+
+### refresh token
+POST http://localhost:3000/auth/refresh
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUyNzIwNTIsImV4cCI6MTc0NTI4Mjg1Mn0.vhE9I3ac8oGkgBJGANdkzcbh2-_iaM1AglubdJXaBW0
+
+###
+
 
 
 ### Logout
 POST http://localhost:3000/auth/logout
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUwOTc0MTEsImV4cCI6MTc0NTEwMTAxMX0.y3wCXPIEVA9ljulO-DsCBuivsq1AhN1omjyMBDMqAQ0
-
 
 ###
