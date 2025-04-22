@@ -105,7 +105,7 @@ export class AuthService {
    */
   async refToken(user: User): Promise<TokenResponse> {
     const payload = { sub: user.id, username: user.username };
-    const token = await this.jwtService.signAsync(payload, this.refConfigOp);
+    const token = await this.jwtService.signAsync(payload);
     if (!token) {
       return {
         success: false,
