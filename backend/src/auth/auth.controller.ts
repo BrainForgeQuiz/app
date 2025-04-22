@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import Response from '../responses/response';
-import { TokenResponse } from '../responses/token.response';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -20,36 +19,25 @@ export class AuthController {
    */
   @Post('register')
   async signUp(@Body() dto: RegisterDto): Promise<Response> {
-    try {
-      const res: TokenResponse = await this.authService.singUp(
-        dto.username,
-        dto.password,
-        dto.email,
-      );
-      return {
-        success: true,
-        data: res,
-      };
-    } catch (e) {
-      console.log(e);
-      return {
-        success: false,
-        error: 'Internal server error',
-        data: null,
-      };
-    }
+    return await this.authService.singUp(dto.username, dto.password, dto.email);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getUserInfo(@Req() req: Request) {
-    return req.user;
+    return req.user?.id;
   }
 
   @UseGuards(RefAuthGuard)
   @Post('refresh')
   refresh(@Req() req: Request) {
-    return req.user;
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.authService.refToken(req.user.id, req.user.username);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -71,12 +59,16 @@ export class AuthController {
    * @description This function logs in a user
    * @param {Request} req - The request object
    * @returns {any} The user object
-   * @throws {UnauthorizedException} If the user is not found
-   * @throws {BadRequestException} If the user is not found
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  signIn(@Req() req: Request) {
-    return req.user;
+  async signIn(@Req() req: Request): Promise<Response> {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return await this.authService.tokenGen(req.user.id, req.user.username);
   }
 }

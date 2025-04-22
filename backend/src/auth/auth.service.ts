@@ -9,6 +9,7 @@ import { TokenResponse } from '../responses/token.response';
 import { hash, genSalt, compare } from 'bcrypt';
 import refConfig from './config/ref.config';
 import { ConfigType } from '@nestjs/config';
+import Response from '../responses/response';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,11 @@ export class AuthService {
     private readonly refConfigOp: ConfigType<typeof refConfig>,
   ) {}
 
+  async allUSer() {
+    const users = await this.dbService.db.select().from(UserTable).execute();
+    console.log('users:', users);
+  }
+
   /**
    *  Find User In DB
    *  @description this fuc is using the dbService to find if user is in the UserTable
@@ -27,14 +33,17 @@ export class AuthService {
    *  @return {UserInDBResponse} - based on this you can proceed with your logic
    */
   async findUser(username: string, email?: string): Promise<UserInDBResponse> {
+    await this.allUSer();
     const filter = email
       ? or(eq(UserTable.username, username), eq(UserTable.email, email))
       : eq(UserTable.username, username);
+    console.log('filter:', filter);
     const users = await this.dbService.db
       .select()
       .from(UserTable)
       .where(filter)
       .execute();
+    console.log('users:', users);
     if (users.length > 0) {
       return {
         inDb: true,
@@ -77,13 +86,13 @@ export class AuthService {
    * @param {string} username - username for the user
    * @param {string} password - password for the user
    * @param {string} email - email for the user
-   * @return {Promise<SaveUserResponse>} - this variable helps you to test if user was saved
+   * @return {Promise<Response>} - this variable helps you to test if user was saved
    */
   async saveUser(
     username: string,
     password: string,
     email: string,
-  ): Promise<SaveUserResponse> {
+  ): Promise<Response> {
     const res: { id: string }[] = await this.dbService.db
       .insert(UserTable)
       .values({ username: username, password: password, email: email })
@@ -94,17 +103,21 @@ export class AuthService {
         success: true,
       };
     }
-    throw new Error('User was not saved');
+    return {
+      success: false,
+      error: 'User was not saved',
+    };
   }
 
   /**
    * Generate Token
    * @description this function is using the jwtService to generate the token for the user
-   * @param {User} user - user for the token
    * @return {string} - this variable helps you to test if token was created
+   * @param userId
+   * @param username
    */
-  async refToken(user: User): Promise<TokenResponse> {
-    const payload = { sub: user.id, username: user.username };
+  async refToken(userId: string, username: string): Promise<TokenResponse> {
+    const payload = { sub: userId, username: username };
     const token = await this.jwtService.signAsync(payload);
     if (!token) {
       return {
@@ -124,11 +137,12 @@ export class AuthService {
   /**
    * Token Generation
    * @description this function is using the jwtService to generate the token for the user
-   * @param {User} user - user for the token
+   * @param {string} userId - user id for the token
+   * @param {string} username - username for the token
    * @return {Promise<TokenResponse>} - this variable helps you to test if token was created
    */
-  async tokenGen(user: User): Promise<TokenResponse> {
-    const payload = { sub: user.id, username: user.username };
+  async tokenGen(userId: string, username: string): Promise<TokenResponse> {
+    const payload = { sub: userId, username: username };
     const token = await this.jwtService.signAsync(payload);
     const refToken = await this.jwtService.signAsync(payload, this.refConfigOp);
     if (!token || !refToken) {
@@ -153,50 +167,22 @@ export class AuthService {
    * @param {string} username - username for the user
    * @param {string} password - password for the user
    * @param {string} email - email for the user
-   * @return {Promise<TokenResponse>} - this variable helps you to test if user was saved
+   * @return {Promise<Response>} - this variable helps you to test if user was saved
    */
   async singUp(
     username: string,
     password: string,
     email: string,
-  ): Promise<TokenResponse> {
+  ): Promise<Response> {
     const userRes: UserInDBResponse = await this.findUser(username, email);
     if (userRes.inDb) {
       return {
         success: false,
         error: 'User already exists',
-        data: null,
       };
     }
     const hashedPassword = await this.hashPassword(password);
-    const res: SaveUserResponse = await this.saveUser(
-      username,
-      hashedPassword,
-      email,
-    );
-    if (!res.success) {
-      return {
-        success: false,
-        error: 'User was not saved',
-        data: null,
-      };
-    }
-    const userData: UserInDBResponse = await this.findUser(username);
-    if (!userData.inDb) {
-      return {
-        success: false,
-        error: 'User was not saved',
-        data: null,
-      };
-    }
-    if (!userData.user) {
-      return {
-        success: false,
-        error: 'No user was saved',
-        data: null,
-      };
-    }
-    return await this.tokenGen(userData.user);
+    return await this.saveUser(username, hashedPassword, email);
   }
 
   /**
@@ -204,36 +190,36 @@ export class AuthService {
    * @description the function for login
    * @param {string} username - username for the user
    * @param {string} password - password for the user
-   * @return {Promise<TokenResponse>}
+   * @return {Promise<Response>}
    */
-  async signIn(username: string, password: string): Promise<TokenResponse> {
+  async signIn(username: string, password: string): Promise<Response> {
     const userData: UserInDBResponse = await this.findUser(username);
-    if (userData.inDb) {
-      if (userData.user) {
-        const user: User = userData.user;
-        const validateUser: boolean = await this.comparePassword(
-          password,
-          user.password,
-        );
-        if (validateUser) {
-          return await this.tokenGen(user);
-        }
-        return {
-          success: false,
-          error: 'Invalid credentials',
-          data: null,
-        };
-      }
+    console.log('userData:', userData);
+    if (!userData.user) {
       return {
         success: false,
         error: 'User data not found',
         data: null,
       };
     }
+    const validateUser: boolean = await this.comparePassword(
+      password,
+      userData.user.password,
+    );
+    if (!validateUser) {
+      return {
+        success: false,
+        error: 'Invalid credentials',
+        data: null,
+      };
+    }
+    const user = {
+      id: userData.user.id,
+      username: userData.user.username,
+    };
     return {
-      success: false,
-      error: 'User was not found',
-      data: null,
+      success: true,
+      data: user,
     };
   }
 }

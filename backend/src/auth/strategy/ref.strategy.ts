@@ -1,11 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as process from 'node:process';
 import TokenPayload from '../dto/token.payload';
-import { User } from '../../entity/user';
+
 import { AuthService } from '../auth.service';
-import { UserInDBResponse } from '../../responses/db.response';
 
 @Injectable()
 export class RefStrategy extends PassportStrategy(Strategy, 'ref-jwt') {
@@ -22,14 +21,8 @@ export class RefStrategy extends PassportStrategy(Strategy, 'ref-jwt') {
     });
   }
 
-  async validate(payload: TokenPayload) {
+  validate(payload: TokenPayload) {
     console.log('RefStrategy payload:', payload);
-    const user: UserInDBResponse = await this.authService.findUser(
-      payload.username,
-    );
-    if (!user.user) {
-      throw new UnauthorizedException();
-    }
-    return await this.authService.refToken(user.user);
+    return { id: payload.sub, username: payload.username };
   }
 }
