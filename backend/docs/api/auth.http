@@ -4,9 +4,9 @@ POST http://localhost:3000/auth/register
 content-type: application/json
 
 {
-  "username": "Alma",
+  "username": "Alma4",
   "password": "Alma",
-  "email": "Alma"
+  "email": "Alma4"
 }
 
 ### Login

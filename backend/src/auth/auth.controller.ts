@@ -19,7 +19,15 @@ export class AuthController {
    */
   @Post('register')
   async signUp(@Body() dto: RegisterDto): Promise<Response> {
-    return await this.authService.singUp(dto.username, dto.password, dto.email);
+    const res = await this.authService.singUp(
+      dto.username,
+      dto.password,
+      dto.email,
+    );
+    return {
+      success: res.success,
+      error: res.error,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

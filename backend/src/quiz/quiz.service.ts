@@ -4,6 +4,7 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import Response from '../responses/response';
 import { DbService } from '../db/db.service';
 import { QuizTable } from '../db/schema/quiz';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class QuizService {
@@ -31,8 +32,23 @@ export class QuizService {
     return `This action returns all quiz`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} quiz`;
+  async findOne(id: string) {
+    const res = await this.dbService.db
+      .select()
+      .from(QuizTable)
+      .where(eq(QuizTable.id, id));
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0],
+        error: null,
+      };
+    }
+    return {
+      success: true,
+      data: false,
+      error: 'Quiz not found',
+    };
   }
 
   update(id: number, updateQuizDto: UpdateQuizDto) {
