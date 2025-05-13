@@ -6,18 +6,31 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('quiz')
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createQuizDto: CreateQuizDto) {
-    return this.quizService.create(createQuizDto);
+  create(@Body() createQuizDto: CreateQuizDto, @Req() req: Request) {
+    console.log('createQuizDto:', createQuizDto);
+    console.log('req.user:', req.user);
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.quizService.create(createQuizDto, req.user?.id);
   }
 
   @Get()
@@ -27,16 +40,23 @@ export class QuizController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.quizService.findOne(+id);
+    return this.quizService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizService.update(+id, updateQuizDto);
+    return this.quizService.update(id, updateQuizDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.quizService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: Request) {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.quizService.remove(id, req.user.id);
   }
 }

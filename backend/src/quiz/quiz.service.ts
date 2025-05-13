@@ -10,14 +10,26 @@ import { eq } from 'drizzle-orm';
 export class QuizService {
   constructor(private readonly dbService: DbService) {}
 
-  async create(createQuizDto: CreateQuizDto): Promise<Response> {
+  async create(
+    createQuizDto: CreateQuizDto,
+    userId: string,
+  ): Promise<Response> {
     //TODO check if quiz exists
+    const dbCheck = await this.findOne(createQuizDto.name);
+    if (dbCheck.data) {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz already exists',
+      };
+    }
+    //Saving
     const res: { id: string }[] = await this.dbService.db
       .insert(QuizTable)
       .values({
         name: createQuizDto.name,
         topic: createQuizDto.topic,
-        userId: createQuizDto.userId,
+        userId: userId,
       })
       .returning({ id: QuizTable.id })
       .execute();
@@ -28,15 +40,42 @@ export class QuizService {
     };
   }
 
-  findAll() {
-    return `This action returns all quiz`;
+  async findAll() {
+    return await this.dbService.db
+      .select({
+        id: QuizTable.id,
+        name: QuizTable.name,
+        topic: QuizTable.topic,
+        userId: QuizTable.userId,
+      })
+      .from(QuizTable)
+      .then((res) => {
+        return {
+          success: true,
+          data: res,
+          error: null,
+        };
+      })
+      .catch((err) => {
+        console.error(err);
+        return {
+          success: false,
+          data: null,
+          error: 'Error fetching quizzes',
+        };
+      });
   }
 
-  async findOne(id: string) {
+  async findOne(name: string) {
     const res = await this.dbService.db
-      .select()
+      .select({
+        id: QuizTable.id,
+        name: QuizTable.name,
+        topic: QuizTable.topic,
+        userId: QuizTable.userId,
+      })
       .from(QuizTable)
-      .where(eq(QuizTable.id, id));
+      .where(eq(QuizTable.name, name));
     if (res.length > 0) {
       return {
         success: true,
@@ -51,11 +90,100 @@ export class QuizService {
     };
   }
 
-  update(id: number, updateQuizDto: UpdateQuizDto) {
-    return `This action updates a #${id} quiz`;
+  async update(id: string, updateQuizDto: UpdateQuizDto, userId: string) {
+    const dbRes = await this.findOne(id);
+
+    if (!dbRes) {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz not found',
+      };
+    }
+    if (typeof dbRes.data === 'boolean') {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz not found',
+      };
+    }
+    if (dbRes.data.userId !== userId) {
+      return {
+        success: false,
+        data: null,
+        error: 'You are not the owner of this quiz',
+      };
+    }
+
+    dbRes.data.topic = updateQuizDto.topic
+      ? updateQuizDto.topic
+      : dbRes.data.topic;
+    dbRes.data.name = updateQuizDto.name ? updateQuizDto.name : dbRes.data.name;
+
+    const res = await this.dbService.db
+      .update(QuizTable)
+      .set({
+        name: dbRes.data.name,
+        topic: dbRes.data.topic,
+      })
+      .where(eq(QuizTable.id, id))
+      .returning({ id: QuizTable.id })
+      .execute();
+
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0].id,
+        error: null,
+      };
+    }
+    return {
+      success: false,
+      data: null,
+      error: 'Error updating quiz',
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} quiz`;
+  async remove(id: string, userId: string) {
+    const res = await this.findOne(id);
+    if (!res) {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz not found',
+      };
+    }
+    if (typeof res.data === 'boolean') {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz not found',
+      };
+    }
+    if (res.data.userId !== userId) {
+      return {
+        success: false,
+        data: null,
+        error: 'You are not the owner of this quiz',
+      };
+    }
+
+    const dbRes = await this.dbService.db
+      .delete(QuizTable)
+      .where(eq(QuizTable.id, id))
+      .returning({ id: QuizTable.id })
+      .execute();
+    if (dbRes.length > 0) {
+      return {
+        success: true,
+        data: dbRes[0].id,
+        error: null,
+      };
+    }
+    return {
+      success: false,
+      data: null,
+      error: 'Error deleting quiz',
+    };
   }
 }

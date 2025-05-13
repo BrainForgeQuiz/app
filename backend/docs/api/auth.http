@@ -20,7 +20,7 @@ content-type: application/json
 
 ### Get User Info
 GET http://localhost:3000/auth/me
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDY5OTcyOTEsImV4cCI6MTc0Njk5ODE5MX0.tnWGnvan-AUgsmqZk8PMWkj6wr6efj03apb-svRPW_o
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDcxMzk0NzAsImV4cCI6MTc0NzE0MDM3MH0.ugA1LJGRXgXrTwftgwY0zuv4xXyuYPYw8kYSscWWYGw
 
 ### refresh token
 POST http://localhost:3000/auth/refresh

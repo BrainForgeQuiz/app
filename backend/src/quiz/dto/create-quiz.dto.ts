@@ -12,8 +12,4 @@ export class CreateQuizDto {
   })
   @IsNotEmpty()
   topic: QuizType;
-
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 }
