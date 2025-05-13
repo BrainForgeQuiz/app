@@ -43,9 +43,20 @@ export class QuizController {
     return this.quizService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizService.update(id, updateQuizDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateQuizDto: UpdateQuizDto,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.quizService.update(id, updateQuizDto, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
