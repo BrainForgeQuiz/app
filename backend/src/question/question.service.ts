@@ -4,12 +4,42 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 import { DbService } from '../db/db.service';
 import { SimpleQuestionTable } from '../db/schema/question';
 import { eq } from 'drizzle-orm';
+import { QuizTable } from '../db/schema/quiz';
 
 @Injectable()
 export class QuestionService {
   constructor(private readonly dbService: DbService) {}
 
-  create(createQuestionDto: CreateQuestionDto, userId: string) {
+  async create(createQuestionDto: CreateQuestionDto, userId: string) {
+    const userCheck = await this.dbService.db
+      .select({
+        id: QuizTable.userId,
+      })
+      .from(QuizTable)
+      .where(eq(QuizTable.id, createQuestionDto.quizId));
+    if (userCheck.length === 0) {
+      return {
+        success: false,
+        data: null,
+        error: 'Quiz not found',
+      };
+    }
+
+    if (userCheck[0].id !== userId) {
+      return {
+        success: false,
+        data: null,
+        error: 'You are not the owner of this quiz',
+      };
+    }
+
+    const res = await this.dbService.db.insert(SimpleQuestionTable).values({
+      question: createQuestionDto.question,
+      answer: createQuestionDto.answer,
+      quizId: createQuestionDto.quizId,
+      points: createQuestionDto.points,
+    });
+
     return 'This action adds a new question';
   }
 
