@@ -1,8 +1,8 @@
-import { numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { integer, numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { id } from '../schemaHelper';
 import { QuizTable } from './quiz';
 
-const points = numeric().notNull().default('1');
+const points = integer().notNull().default(1);
 const quizId = uuid()
   .references(() => QuizTable.id)
   .notNull();
@@ -23,7 +23,7 @@ export const ChoiceQuestionTable = pgTable('choice_questions', {
   option1: text().notNull(),
   option2: text().notNull(),
   option3: text().notNull(),
-  correct: numeric().notNull().default('0'),
+  correct: integer().notNull().default(0),
   quizId,
   points,
 });
