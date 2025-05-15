@@ -1,0 +1,16 @@
+### GET request for all quizzes
+GET http://localhost:3000/quiz
+
+### POST request to create a new quiz
+POST http://localhost:3000/quiz
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDcxMzgzMTMsImV4cCI6MTc0NzEzOTIxM30.PG437Jv8_F4WTVncVAWeEnD7QE1JyrijnZM-Pnz34Do
+
+{
+  "name": "Alma",
+  "topic": "HISTORY"
+}
+
+### DELETE request to delete a quiz
+DELETE http://localhost:3000/quiz/quiz
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDUwOTc0MTEsImV4cCI6MTc0NTEwMTAxMX0.y3wCXPIEVA9ljulO-DsCBuivsq1AhN1omjyMBDMqAQ0

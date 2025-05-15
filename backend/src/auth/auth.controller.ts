@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import Response from '../responses/response';
-import { LoginDto } from './dto/login.dto';
-import { TokenResponse } from '../responses/token.response';
 import { RegisterDto } from './dto/register.dto';
-import { AuthGuard } from './guards/auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Request } from 'express';
+import { RefAuthGuard } from './guards/ref-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,66 +19,64 @@ export class AuthController {
    */
   @Post('register')
   async signUp(@Body() dto: RegisterDto): Promise<Response> {
-    try {
-      const res: TokenResponse = await this.authService.singUp(
-        dto.username,
-        dto.password,
-        dto.email,
-      );
-      return {
-        success: true,
-        data: res,
-      };
-    } catch (e) {
-      console.log(e);
-      return {
-        success: false,
-        error: 'Internal server error',
-        data: null,
-      };
-    }
+    const res = await this.authService.singUp(
+      dto.username,
+      dto.password,
+      dto.email,
+    );
+    return {
+      success: res.success,
+      error: res.error,
+    };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('me')
-  getUserInfo(@Request() request) {
+  getUserInfo(@Req() req: Request) {
+    return req.user?.id;
+  }
+
+  @UseGuards(RefAuthGuard)
+  @Post('refresh')
+  refresh(@Req() req: Request) {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.authService.refToken(req.user.id, req.user.username);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  logout(@Req() req: Request): Response {
+    req.logout(function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
     return {
-      success: true,
-      data: request.user,
+      success: !req.user,
+      data: req.user,
     };
   }
 
   /**
    * Login endpoint
-   * @description This function creates a jwt, if the user credentials are that can be used for further auth
-   * @param {LoginDto} dto - The login data transfer object
-   * @returns {Response} An object that contains the login response
+   * @description This function logs in a user
+   * @param {Request} req - The request object
+   * @returns {any} The user object
    */
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async signIn(@Body() dto: LoginDto): Promise<Response> {
-    try {
-      const res: TokenResponse = await this.authService.signIn(
-        dto.username,
-        dto.password,
-      );
-      if (res.success) {
-        return {
-          success: true,
-          data: res.data,
-        };
-      }
+  async signIn(@Req() req: Request): Promise<Response> {
+    if (!req.user) {
       return {
         success: false,
-        error: res.error,
-        data: null,
-      };
-    } catch (e) {
-      console.log(e);
-      return {
-        success: false,
-        error: 'Internal server error',
-        data: null,
+        error: 'User not found',
       };
     }
+    return await this.authService.tokenGen(req.user.id, req.user.username);
   }
 }
