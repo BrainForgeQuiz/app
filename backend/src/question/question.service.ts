@@ -10,55 +10,181 @@ import { QuizTable } from '../db/schema/quiz';
 export class QuestionService {
   constructor(private readonly dbService: DbService) {}
 
-  async create(createQuestionDto: CreateQuestionDto, userId: string) {
+  async checkIfUserIsOwner(userId: string, quizId: string): Promise<boolean> {
     const userCheck = await this.dbService.db
       .select({
         id: QuizTable.userId,
       })
       .from(QuizTable)
-      .where(eq(QuizTable.id, createQuestionDto.quizId));
+      .where(eq(QuizTable.id, quizId));
     if (userCheck.length === 0) {
-      return {
-        success: false,
-        data: null,
-        error: 'Quiz not found',
-      };
+      return false;
     }
-
-    if (userCheck[0].id !== userId) {
-      return {
-        success: false,
-        data: null,
-        error: 'You are not the owner of this quiz',
-      };
-    }
-
-    const res = await this.dbService.db.insert(SimpleQuestionTable).values({
-      question: createQuestionDto.question,
-      answer: createQuestionDto.answer,
-      quizId: createQuestionDto.quizId,
-      points: createQuestionDto.points,
-    });
-
-    return 'This action adds a new question';
+    return userCheck[0].id === userId;
   }
 
-  findAll() {
-    return `This action returns all question`;
+  async create(createQuestionDto: CreateQuestionDto, userId: string) {
+    const userCheckRes = await this.checkIfUserIsOwner(
+      userId,
+      createQuestionDto.quizId,
+    );
+
+    if (!userCheckRes) {
+      return {
+        success: false,
+        data: null,
+        error: 'User is not owner of quiz',
+      };
+    }
+
+    const res = await this.dbService.db
+      .insert(SimpleQuestionTable)
+      .values({
+        question: createQuestionDto.question,
+        answer: createQuestionDto.answer,
+        quizId: createQuestionDto.quizId,
+        points: createQuestionDto.points,
+      })
+      .returning({
+        id: SimpleQuestionTable.id,
+      })
+      .execute();
+
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0].id,
+        error: null,
+      };
+    }
+
+    return {
+      success: false,
+      data: null,
+      error: 'Question was not saved',
+    };
+  }
+
+  async findAllForQuiz(quizId: string) {
+    return await this.dbService.db
+      .select()
+      .from(SimpleQuestionTable)
+      .where(eq(SimpleQuestionTable.quizId, quizId))
+      .then((res) => {
+        return {
+          success: true,
+          data: res,
+          error: null,
+        };
+      })
+      .catch((err) => {
+        console.error(err);
+        return {
+          success: false,
+          data: null,
+          error: 'Error fetching questions',
+        };
+      });
   }
 
   async findOne(id: string) {
-    const res = this.dbService.db
+    const res = await this.dbService.db
       .select()
       .from(SimpleQuestionTable)
       .where(eq(SimpleQuestionTable.id, id));
+
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0],
+        error: null,
+      };
+    }
+
+    return {
+      success: false,
+      data: null,
+      error: 'Question not found',
+    };
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
+  async update(
+    id: string,
+    updateQuestionDto: UpdateQuestionDto,
+    userId: string,
+  ) {
+    const userCheckRes = await this.checkIfUserIsOwner(userId, id);
+    if (!userCheckRes) {
+      return {
+        success: false,
+        data: null,
+        error: 'User is not owner of quiz',
+      };
+    }
+    //check for correct user
+    const dbRes = await this.findOne(id);
+    if (!dbRes.success) {
+      return {
+        success: false,
+        data: null,
+        error: 'Question not found',
+      };
+    }
+    const res = await this.dbService.db
+      .update(SimpleQuestionTable)
+      .set({
+        question: updateQuestionDto.question,
+        answer: updateQuestionDto.answer,
+        points: updateQuestionDto.points,
+      })
+      .returning({
+        id: SimpleQuestionTable.id,
+      })
+      .execute();
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0].id,
+        error: null,
+      };
+    }
+    return {
+      success: false,
+      data: null,
+      error: 'Question was not updated',
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} question`;
+  async remove(id: string, userId: string) {
+    const userCheckRes = await this.checkIfUserIsOwner(userId, id);
+    if (!userCheckRes) {
+      return {
+        success: false,
+        data: null,
+        error: 'User is not owner of quiz',
+      };
+    }
+    //check for correct user
+    const res = await this.dbService.db
+      .delete(SimpleQuestionTable)
+      .where(eq(SimpleQuestionTable.id, id))
+      .returning({
+        id: SimpleQuestionTable.id,
+      })
+      .execute();
+
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res[0].id,
+        error: null,
+      };
+    }
+
+    return {
+      success: false,
+      data: null,
+      error: 'Question was not deleted',
+    };
   }
 }
