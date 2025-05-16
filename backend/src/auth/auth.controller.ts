@@ -33,7 +33,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getUserInfo(@Req() req: Request) {
-    return req.user?.id;
+    return req.user ? req.user : { success: false, error: 'User not found' };
   }
 
   @UseGuards(RefAuthGuard)
