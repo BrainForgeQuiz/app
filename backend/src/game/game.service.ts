@@ -43,7 +43,7 @@ export class GameService {
 
     const game = new Game(userId, startGameDto.quizId, questions);
 
-    const gameToken = this.jwtService.signAsync(game);
+    const gameToken = await this.jwtService.signAsync(game);
 
     return {
       success: true,
