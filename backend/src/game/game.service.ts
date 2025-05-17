@@ -139,7 +139,7 @@ export class GameService {
     const question = gs.listOfQuestions.findIndex(
       (q) => q.id === checkGameDto.questionId,
     );
-    if (!question) {
+    if (question === -1) {
       return {
         success: false,
         data: null,
