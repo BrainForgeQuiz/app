@@ -5,6 +5,7 @@ import Response from '../responses/response';
 import { DbService } from '../db/db.service';
 import { QuizTable } from '../db/schema/quiz';
 import { eq } from 'drizzle-orm';
+import { SimpleQuestionTable } from '../db/schema/question';
 
 @Injectable()
 export class QuizService {
@@ -76,10 +77,17 @@ export class QuizService {
       })
       .from(QuizTable)
       .where(eq(QuizTable.id, id));
+
+    const questionCount = await this.dbService.db
+      .select({
+        id: SimpleQuestionTable.id,
+      })
+      .from(SimpleQuestionTable)
+      .where(eq(SimpleQuestionTable.quizId, id));
     if (res.length > 0) {
       return {
         success: true,
-        data: res[0],
+        data: { ...res[0], questionCount: questionCount.length },
         error: null,
       };
     }

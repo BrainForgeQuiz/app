@@ -1,119 +1,231 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
 import { Header } from "@/components/header"
-import { useParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { LoginModal } from "@/components/login-modal"
 import { RegisterModal } from "@/components/register-modal"
+import { TextAnswerQuestion } from "@/components/text-answer-question"
 import { fetchQuizById } from "@/lib/quiz_api"
+import { startGame } from "@/lib/game_api"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Loader2, Redo, Redo2, Undo2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import type { Quiz, Question } from "@/types"
+import toast from "react-hot-toast"
 
-export default function QuizPage() {
-  const params = useParams()
-  const [quiz, setQuiz] = useState<{ id: string; name: string; questions: Array<{ id: string; question: string; options: Array<string>; correctAnswer: string }> }>({} as any)
-  const { user, isAuthenticated } = useAuth()
-  const [isLoading, setIsLoading] = useState(true)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export default function TextQuizPage() {
+    const params = useParams()
+    const router = useRouter()
+    const [quiz, setQuiz] = useState<Quiz | null>(null)
+    const { user, isAuthenticated } = useAuth()
+    const [isLoading, setIsLoading] = useState(true)
+    const [showLoginModal, setShowLoginModal] = useState(false)
+    const [showRegisterModal, setShowRegisterModal] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({})
+    const [quizCompleted, setQuizCompleted] = useState(false)
+    const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
+    const [questions, setQuestions] = useState<Question[]>([])
+    const quizId = params.id as string
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      setShowLoginModal(true)
-    }
-  }, [isLoading, isAuthenticated])
-
-  useEffect(() => {
-      const getQuiz = async () => {
-        try {
-          const quizId = Array.isArray(params.id) ? params.id[0] : params.id
-          if (!quizId) {
-            setError("Quiz ID is required")
-            return
-          }
-          const data = await fetchQuizById(quizId)
-          setQuiz(data)
-        } catch (err) {
-          setError("Failed to load quiz")
-        } finally {
-          setIsLoading(false)
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setShowLoginModal(true)
         }
-      }
+    }, [isLoading, isAuthenticated])
 
-      getQuiz()
-    }, [])
+    useEffect(() => {
+        if (!isAuthenticated) return
+        const start = async () => {
+            toast.success("Imagine the quiz is starting now!")
+            setCurrentQuestion({ id: "1", question: "Template question" })
+            setQuestions([{ id: "1", question: "Template question" }])
+        }
 
-  if (isLoading) {
-    return (
-      <div>
-        <Header />
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold">Loading...</h2>
-            <p className="text-muted-foreground">Please wait while we load your quiz</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+        const getQuiz = async () => {
+            try {
+                setIsLoading(true)
+                const data = await fetchQuizById(quizId)
+                setQuiz(data)
+            } catch (err) {
+                setError("Failed to load quiz. It might not exist or has been removed.")
+            } finally {
+                setIsLoading(false)
+                start()
+            }
+        }
 
-  if (error) {
-    return (
-      <div>
-        <Header />
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold">Error</h2>
-            <p className="text-red-500">{error}</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+        getQuiz()
+    }, [params.id, isAuthenticated])
 
-  return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-        <Header />
-        {isAuthenticated && user ? (
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">{quiz?.name}</h1>
-            <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
-              <div className="text-center">
-                <h2 className="text-2xl font-semibold">Not Implemented</h2>
-                <p className="text-muted-foreground">
-                  Quiz ID: {params.id}
-                </p>
-              </div>
+    const handleNextQuestion = () => {
+        if (quiz && currentQuestionIndex < quiz.questionCount - 1) {
+            setCurrentQuestionIndex((prev) => prev + 1)
+        } else {
+            setQuizCompleted(true)
+            toast.success("Quiz completed! Thank you for your answers.")
+        }
+    }
+
+    const handleBackToHome = () => {
+        router.push("/")
+    }
+
+    if (!isAuthenticated || !user) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+                <Header />
+
+                <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-semibold">Please log in to access the quiz</h2>
+                        <Button onClick={() => setShowLoginModal(true)} className="mt-4">
+                            Log In
+                        </Button>
+                    </div>
+                </div>
+                <LoginModal
+                    open={showLoginModal}
+                    onOpenChange={setShowLoginModal}
+                    onRegisterClick={() => {
+                        setShowLoginModal(false)
+                        setShowRegisterModal(true)
+                    }}
+                />
+            
+                <RegisterModal
+                    open={showRegisterModal}
+                    onOpenChange={setShowRegisterModal}
+                    onLoginClick={() => {
+                        setShowRegisterModal(false)
+                        setShowLoginModal(true)
+                    }}
+                />
             </div>
-          </div>
-        ) : (
-          <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold">Unauthorized</h2>
-              <p className="text-muted-foreground">
-                You must be logged in to take a quiz.
-              </p>
+        )
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+                <Header />
+                <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
+                    <div className="text-center">
+                        <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-[#2563eb]" />
+                        <h2 className="text-2xl font-semibold">Loading Quiz...</h2>
+                        <p className="text-muted-foreground mt-2">Please wait while we prepare your quiz</p>
+                    </div>
+                </div>
             </div>
-          </div>
-        )}
+        )
+    }
 
-        <LoginModal
-        open={showLoginModal}
-        onOpenChange={setShowLoginModal}
-        onRegisterClick={() => {
-          setShowLoginModal(false)
-          setShowRegisterModal(true)
-        }}
-      />
+    if (error || !quiz) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+                <Header />
+                <div className="container mx-auto px-4 py-12">
+                    <div className="max-w-2xl mx-auto text-center p-8 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Quiz Not Found</h2>
+                        <p className="text-muted-foreground mb-6">{error || "This quiz doesn't exist or has been removed."}</p>
+                        <Button onClick={handleBackToHome} className="mx-auto">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Home
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
-      <RegisterModal
-        open={showRegisterModal}
-        onOpenChange={setShowRegisterModal}
-        onLoginClick={() => {
-          setShowRegisterModal(false)
-          setShowLoginModal(true)
-        }}
-      />
-      </div>
-  )
+    if (quizCompleted) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+                <Header />
+                <div className="container mx-auto px-4 py-12">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl font-bold mb-2">Quiz Completed</h1>
+                            <p className="text-muted-foreground">Thank you for completing the quiz!</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 mb-8">
+                            <h2 className="text-2xl font-bold mb-6 blue-gradient-text">Your Answers</h2>
+
+                            <div className="space-y-6">
+                                {questions.map((question, index) => (
+                                    <div key={question.id} className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                                        <div className="flex items-start gap-3 mb-4">
+                                            <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/30 text-[#1e40af] dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
+                                                {index + 1}
+                                            </span>
+                                            <h3 className="text-lg font-medium">{question.question}</h3>
+                                        </div>
+
+                                        <div className="ml-11">
+                                            <div className="mb-4">
+                                                <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Your Answer:</h4>
+                                                <div className="p-3 bg-[#eff6ff] dark:bg-[#1e3a8a]/20 rounded-md border border-[#bfdbfe] dark:border-[#1e40af]">
+                                                    <p className="whitespace-pre-wrap">{userAnswers[question.id] || "No answer provided"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-8 flex justify-center gap-4">
+                                <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
+                                    <Undo2 className="mr-2 h-4 w-4" />
+                                    Retake
+                                </Button>
+                                <Button onClick={handleBackToHome} className="blue-gradient blue-gradient-hover text-white">
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Back to Home
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+            <Header />
+                <div className="container mx-auto px-4 py-8">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="mb-8">
+                            <div className="flex justify-between items-center mb-2">
+                                <h1 className="text-3xl font-bold">{quiz.name}</h1>
+                                <Badge className="blue-gradient">{quiz.topic}</Badge>
+                            </div>
+                            <div className="flex justify-between items-center mb-6">
+                                <p className="text-muted-foreground">
+                                    Question {currentQuestionIndex + 1} of {quiz.questionCount}
+                                </p>
+                            </div>
+                        </div>
+
+                        {questions.length > 0 && currentQuestion && (
+                            <TextAnswerQuestion
+                                question={currentQuestion}
+                                questionNumber={currentQuestionIndex + 1}
+                                onNext={handleNextQuestion}
+                                isLast={currentQuestionIndex === questions.length - 1}
+                                onAnswerChange={(answer) => {
+                                    setUserAnswers((prev) => ({
+                                        ...prev,
+                                        [currentQuestion.id]: answer,
+                                    }))
+                                }}
+                            />
+                        )}
+                    </div>
+                </div>
+        </div>
+    )
 }

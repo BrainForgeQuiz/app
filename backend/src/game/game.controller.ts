@@ -11,7 +11,7 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/start')
+  @Post('/start')
   start(@Body() startGameDto: StartGameDto, @Req() req: Request) {
     if (!req.user) {
       return {
@@ -23,7 +23,7 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/question')
+  @Post('/question')
   getQuestions(@Body() getQuestionDto: GetQuestionDto, @Req() req: Request) {
     if (!req.user) {
       return {

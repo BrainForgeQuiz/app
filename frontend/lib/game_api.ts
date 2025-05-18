@@ -7,13 +7,16 @@ export async function startGame(quizId: string) {
     }
 
     const response = await fetch(`${API_URL}/game/start`, {
-        method: "GET",
+        method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({ quizId }),
     })
     const gameToken = await handleResponse(response)
+    console.log("Game token:", gameToken)
+    console.log("id:", quizId)
     if (!gameToken || !gameToken.data) {
         throw new Error("Game token not found")
     }
@@ -28,7 +31,7 @@ export async function getQuestion(gameToken: string) {
     }
 
     const response = await fetch(`${API_URL}/game/question`, {
-        method: "GET",
+        method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
         },

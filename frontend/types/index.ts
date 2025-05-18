@@ -12,21 +12,12 @@ export interface Quiz {
   topic: string
   userId?: string
   createdAt?: string
-}
-
-export interface QuizOption {
-  id: string
-  text: string
-  isCorrect: boolean
+  questionCount: number
 }
 
 export interface Question {
   id: string
-  text: string
-  description?: string
-  options: QuizOption[]
-  explanation?: string
-  hint?: string
+  question: string
 }
 
 export interface AuthResponse {
