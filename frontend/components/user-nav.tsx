@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User, Settings, List } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import Link from "next/link"
 
 export function UserNav() {

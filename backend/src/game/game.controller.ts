@@ -23,7 +23,7 @@ export class GameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/questions')
+  @Get('/question')
   getQuestions(@Body() getQuestionDto: GetQuestionDto, @Req() req: Request) {
     if (!req.user) {
       return {

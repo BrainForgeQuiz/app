@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { registerUser, loginUser, getUserInfo, refreshToken } from "@/lib/api"
+import { registerUser, loginUser, getUserInfo, refreshToken } from "@/lib/auth_api"
 import type { User } from "@/types"
 import toast from "react-hot-toast"
 
