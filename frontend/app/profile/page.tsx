@@ -38,7 +38,7 @@ export default function Profile() {
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center">
             <h2 className="text-2xl font-semibold">Loading...</h2>
-            <p className="text-muted-foreground">Please wait while we load your dashboard</p>
+            <p className="text-muted-foreground">Please wait while we load your profile</p>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function Profile() {
           </Tabs>
         ) : (
           <div className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-4">Please log in to access your dashboard</h2>
+            <h2 className="text-2xl font-bold mb-4">Please log in to access your profile</h2>
             <p className="text-muted-foreground mb-6">You need to be logged in to view and manage your quizzes.</p>
           </div>
         )}
