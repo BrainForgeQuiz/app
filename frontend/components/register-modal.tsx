@@ -39,7 +39,6 @@ export function RegisterModal({ open, onOpenChange, onLoginClick }: RegisterModa
       await register(username, password, email)
       onOpenChange(false)
       onLoginClick()
-      // Reset form
       setUsername("")
       setPassword("")
       setEmail("")
