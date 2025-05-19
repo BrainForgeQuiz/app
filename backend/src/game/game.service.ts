@@ -8,6 +8,7 @@ import { Game, QuestionSendBack } from './entities/game.entity';
 import { JwtService } from '@nestjs/jwt';
 import { GetQuestionDto } from './dto/get-question.dto';
 import { UserTable } from '../db/schema/user';
+import { GameStatus } from './entities/game.status';
 
 @Injectable()
 export class GameService {
@@ -20,6 +21,7 @@ export class GameService {
     const dbCheck = await this.dbService.db
       .select({
         id: SimpleQuestionTable.id,
+        question: SimpleQuestionTable.question,
       })
       .from(SimpleQuestionTable)
       .where(eq(SimpleQuestionTable.quizId, startGameDto.quizId));
@@ -36,6 +38,7 @@ export class GameService {
     for (let i = 0; i < dbCheck.length; i++) {
       questions.push({
         id: dbCheck[i].id,
+        question: dbCheck[i].question,
         trys: 3,
         score: 0,
       });
@@ -55,6 +58,7 @@ export class GameService {
     return {
       success: true,
       data: gameToken,
+      tries: this.addUpTries(game.listOfQuestions),
       error: null,
     };
   }
@@ -110,9 +114,16 @@ export class GameService {
     return points;
   }
 
+  addUpTries(questions: QuestionSendBack[]) {
+    let tries = 0;
+    for (let i = 0; i < questions.length; i++) {
+      tries += questions[i].trys;
+    }
+    return tries;
+  }
+
   getQuestions(getQuestionDto: GetQuestionDto, userId: string) {
     const gs: { game: Game } = this.jwtService.decode(getQuestionDto.gameState);
-    console.log('gs:', gs);
     if (!gs) {
       return {
         success: false,
@@ -171,17 +182,20 @@ export class GameService {
         error: 'Question not found',
       };
     }
-
+    let gameStatus: GameStatus;
     if (answer[0].answer === checkGameDto.answer) {
       gs.game.listOfQuestions[question].score += 1;
       gs.game.listOfQuestions[question].trys -= 1;
+      gameStatus = GameStatus.CORRECT;
     } else {
       gs.game.listOfQuestions[question].trys += 1;
+      gameStatus = GameStatus.WRONG;
     }
 
     if (this.checkGameOver(gs.game.listOfQuestions)) {
       return {
         success: true,
+        gameStatus: GameStatus.GAMEOVER,
         data: this.savePoints(
           userId,
           this.addUpPoints(gs.game.listOfQuestions),
@@ -196,6 +210,8 @@ export class GameService {
 
     return {
       success: true,
+      gameStatus: gameStatus,
+      tries: this.addUpTries(gs.game.listOfQuestions),
       data: gameToken,
     };
   }
