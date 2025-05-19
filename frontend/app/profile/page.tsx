@@ -10,8 +10,6 @@ import { CreateQuizForm } from "@/components/create-quiz-form"
 import { UserProfile } from "@/components/user-profile"
 import { Button } from "@/components/ui/button"
 
-const ALLOWED_TABS = ["profile", "create-quiz"]
-
 export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const { openLogin } = useAuthModal()
@@ -42,10 +40,22 @@ export default function Profile() {
     )
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Please log in to access your profile</h2>
+          <p className="text-muted-foreground mb-6">You need to be logged in to view and manage your quizzes.</p>
+          <Button onClick={openLogin}>Log In</Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
-      {isAuthenticated && user ? (
+      {user ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
             <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -74,13 +84,7 @@ export default function Profile() {
             </Card>
           </TabsContent>
         </Tabs>
-      ) : (
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-4">Please log in to access your profile</h2>
-          <p className="text-muted-foreground mb-6">You need to be logged in to view and manage your quizzes.</p>
-          <Button onClick={openLogin}>Log In</Button>
-        </div>
-      )}
+      ) : null}
     </div>
   )
 }

@@ -15,33 +15,34 @@ import toast from "react-hot-toast"
 export default function TextQuizPage() {
   const params = useParams()
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
-  const { openLogin } = useAuthModal()
   const quizId = params.id as string
-
+  const { isAuthenticated, isLoading } = useAuth()
+  const { openLogin } = useAuthModal()
+  
+  const [isQuizLoading, setIsQuizLoading] = useState(false)
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    if (!isAuthenticated) openLogin()
-  }, [isAuthenticated])
+    if (!isLoading && !isAuthenticated) {
+      openLogin()
+    }
+  }, [isLoading, isAuthenticated])
 
   useEffect(() => {
     if (!isAuthenticated) return
-    setIsLoading(true)
+    setIsQuizLoading(true)
     fetchQuizById(quizId)
       .then((data) => {
         setQuiz(data)
-        // TODO: Replace with real questions from API
         setQuestions([{ id: "1", question: "Template question" }])
         toast.success("Imagine the quiz is starting now!")
       })
       .catch(() => setError("Failed to load quiz. It might not exist or has been removed."))
-      .finally(() => setIsLoading(false))
+      .finally(() => setIsQuizLoading(false))
   }, [quizId, isAuthenticated])
 
   const handleNextQuestion = () => {
@@ -62,7 +63,19 @@ export default function TextQuizPage() {
   const quizCompleted = currentQuestionIndex >= questions.length
   const currentQuestion = questions[currentQuestionIndex]
 
-  if (!isAuthenticated || !user) {
+  if (isLoading || isQuizLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-[#2563eb]" />
+          <h2 className="text-2xl font-semibold">Loading Quiz...</h2>
+          <p className="text-muted-foreground mt-2">Please wait while we prepare your quiz</p>
+        </div>
+      </div>
+    )
+  }
+  
+  if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
         <div className="text-center">
@@ -74,19 +87,7 @@ export default function TextQuizPage() {
       </div>
     )
   }
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-[#2563eb]" />
-          <h2 className="text-2xl font-semibold">Loading Quiz...</h2>
-          <p className="text-muted-foreground mt-2">Please wait while we prepare your quiz</p>
-        </div>
-      </div>
-    )
-  }
-
+  
   if (error || !quiz) {
     return (
       <div className="container mx-auto px-4 py-12">
@@ -180,3 +181,4 @@ export default function TextQuizPage() {
     </div>
   )
 }
+
