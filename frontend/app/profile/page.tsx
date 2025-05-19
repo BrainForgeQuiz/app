@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserProfile } from "@/components/user-profile"
 import { Button } from "@/components/ui/button"
 import { TextQuizCreator } from "@/components/quiz-creator"
+import { UserQuizList } from "@/components/user-quiz-list"
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -57,8 +58,9 @@ export default function Profile() {
       <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
       {user ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+          <TabsList className="grid w-full max-w-lg grid-cols-3 mb-8">
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="my-quizzes">My Quizzes</TabsTrigger>
             <TabsTrigger value="create-quiz">Create Quiz</TabsTrigger>
           </TabsList>
           <TabsContent value="profile" className="space-y-4">
@@ -72,6 +74,17 @@ export default function Profile() {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="my-quizzes" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>My Quizzes</CardTitle>
+                  <CardDescription>Manage quizzes you've created</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UserQuizList />
+                </CardContent>
+              </Card>
+            </TabsContent>
           <TabsContent value="create-quiz" className="space-y-4">
               <Card>
                 <CardHeader>

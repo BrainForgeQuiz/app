@@ -52,7 +52,7 @@ export function Header() {
                             Profile
                           </Button>
                         </Link>
-                        <Link href="/create-quiz">
+                        <Link href="/profile?tab=create-quiz">
                           <Button variant="ghost" className="w-full justify-start">
                             Create Quiz
                           </Button>

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User } from "lucide-react"
+import { List, LogOut, User } from "lucide-react"
 import Link from "next/link"
 
 export function UserNav() {
@@ -47,6 +47,12 @@ export function UserNav() {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuItem asChild>
+            <Link href="/profile?tab=my-quizzes" className="cursor-pointer w-full">
+              <List className="mr-2 h-4 w-4" />
+              <span>My Quizzes</span>
+            </Link>
+          </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />

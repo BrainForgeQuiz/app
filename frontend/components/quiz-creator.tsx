@@ -193,7 +193,7 @@ export function TextQuizCreator() {
                 <div className="space-y-2">
                   {questions.map((question, index) => (
                     <div
-                      key={question.id}
+                      key={`question-${index}`}
                       className={`p-3 rounded-md flex justify-between items-center cursor-pointer ${currentQuestionIndex === index
                         ? "bg-[#eff6ff] dark:bg-[#1e3a8a]/30 border border-[#2563eb] dark:border-[#3b82f6]"
                         : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#2563eb] dark:hover:border-[#3b82f6]"
