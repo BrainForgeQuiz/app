@@ -22,12 +22,12 @@ export function TextQuestionEditor({ question, onChange }: TextQuestionEditorPro
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="question">Question</Label>
-        <Textarea
+        <Input
+          type="text"
           id="question"
           placeholder="Enter your question"
           value={question.question}
           onChange={(e) => handleChange("question", e.target.value)}
-          className="min-h-[80px]"
         />
       </div>
 
@@ -35,7 +35,8 @@ export function TextQuestionEditor({ question, onChange }: TextQuestionEditorPro
         <Label htmlFor="question-correct-answer">
           Correct Answer
         </Label>
-        <Textarea
+        <Input
+          type="text"
           id="question-correct-answer"
           placeholder="Enter the correct answer"
           value={question.correctAnswer || ""}
@@ -52,8 +53,7 @@ export function TextQuestionEditor({ question, onChange }: TextQuestionEditorPro
           min={1}
           max={3}
           id="question-points"
-          placeholder="Enter the points how much this question is worth"
-          className="w-16"
+          className="w-auto"
           value={question.points || 1}
           onChange={(e) => handleChange("points", e.target.value)}
         />
