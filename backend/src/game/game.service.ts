@@ -43,7 +43,14 @@ export class GameService {
 
     const game = new Game(userId, startGameDto.quizId, questions);
 
-    const gameToken = await this.jwtService.signAsync(game);
+    const gameToken = await this.jwtService.signAsync(
+      {
+        game: game,
+      },
+      {
+        expiresIn: '2h',
+      },
+    );
 
     return {
       success: true,
@@ -102,7 +109,8 @@ export class GameService {
   }
 
   getQuestions(getQuestionDto: GetQuestionDto, userId: string) {
-    const gs: Game = this.jwtService.decode(getQuestionDto.gameState);
+    const gs: { game: Game } = this.jwtService.decode(getQuestionDto.gameState);
+    console.log('gs:', gs);
     if (!gs) {
       return {
         success: false,
@@ -110,18 +118,18 @@ export class GameService {
         error: 'Game state is invalid',
       };
     }
-    if (gs.userId !== userId) {
+    if (gs.game.userId !== userId) {
       return {
         success: false,
         data: null,
         error: 'User is not owner of game',
       };
     }
-    return this.getRandomQuestion(gs.listOfQuestions);
+    return this.getRandomQuestion(gs.game.listOfQuestions);
   }
 
   async check(checkGameDto: CheckGameDto, userId: string) {
-    const gs: Game = this.jwtService.decode(checkGameDto.gameState);
+    const gs: { game: Game } = this.jwtService.decode(checkGameDto.gameState);
     if (!gs) {
       return {
         success: false,
@@ -129,14 +137,14 @@ export class GameService {
         error: 'Game state is invalid',
       };
     }
-    if (gs.userId !== userId) {
+    if (gs.game.userId !== userId) {
       return {
         success: false,
         data: null,
         error: 'User is not owner of game',
       };
     }
-    const question = gs.listOfQuestions.findIndex(
+    const question = gs.game.listOfQuestions.findIndex(
       (q) => q.id === checkGameDto.questionId,
     );
     if (question === -1) {
@@ -152,7 +160,7 @@ export class GameService {
         answer: SimpleQuestionTable.answer,
       })
       .from(SimpleQuestionTable)
-      .where(eq(SimpleQuestionTable.id, gs.listOfQuestions[question].id));
+      .where(eq(SimpleQuestionTable.id, gs.game.listOfQuestions[question].id));
 
     if (answer.length === 0) {
       return {
@@ -163,20 +171,23 @@ export class GameService {
     }
 
     if (answer[0].answer === checkGameDto.answer) {
-      gs.listOfQuestions[question].score += 1;
-      gs.listOfQuestions[question].trys -= 1;
+      gs.game.listOfQuestions[question].score += 1;
+      gs.game.listOfQuestions[question].trys -= 1;
     } else {
-      gs.listOfQuestions[question].trys += 1;
+      gs.game.listOfQuestions[question].trys += 1;
     }
 
-    if (this.checkGameOver(gs.listOfQuestions)) {
+    if (this.checkGameOver(gs.game.listOfQuestions)) {
       return {
         success: true,
-        data: this.savePoints(userId, this.addUpPoints(gs.listOfQuestions)),
+        data: this.savePoints(
+          userId,
+          this.addUpPoints(gs.game.listOfQuestions),
+        ),
       };
     }
 
-    const gameToken = this.jwtService.signAsync(gs);
+    const gameToken = this.jwtService.signAsync(gs, { expiresIn: '2h' });
 
     return {
       success: true,
