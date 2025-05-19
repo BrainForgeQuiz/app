@@ -122,6 +122,30 @@ export class QuizService {
     };
   }
 
+  async findOneByUserId(userId: string) {
+    const res = await this.dbService.db
+      .select({
+        id: QuizTable.id,
+        name: QuizTable.name,
+        topic: QuizTable.topic,
+        userId: QuizTable.userId,
+      })
+      .from(QuizTable)
+      .where(eq(QuizTable.userId, userId));
+    if (res.length > 0) {
+      return {
+        success: true,
+        data: res,
+        error: null,
+      };
+    }
+    return {
+      success: true,
+      data: false,
+      error: 'Quiz not found',
+    };
+  }
+
   async update(id: string, updateQuizDto: UpdateQuizDto, userId: string) {
     const dbRes = await this.findOne(id);
 
