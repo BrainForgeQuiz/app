@@ -18,6 +18,7 @@ export interface Quiz {
 export interface Question {
   id: string
   question: string
+  userAnswer?: string
 }
 
 export interface AuthResponse {

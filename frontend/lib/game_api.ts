@@ -24,7 +24,7 @@ export async function startGame(quizId: string) {
     return gameToken.data
 }
 
-export async function getQuestion(gameToken: string) {
+export async function getQuestion(gameState: string) {
     const token = localStorage.getItem("token")
     if (!token) {
         throw new Error("Authentication required")
@@ -34,8 +34,9 @@ export async function getQuestion(gameToken: string) {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ gameToken }),
+        body: JSON.stringify({ gameState }),
     })
     const question = await handleResponse(response)
     if (!question || !question.data) {
@@ -44,7 +45,7 @@ export async function getQuestion(gameToken: string) {
     return question.data
 }
 
-export async function checkAnswer(questionId: string, gameToken: string, answer: string) {
+export async function checkAnswer(questionId: string, gameState: string, answer: string) {
     const token = localStorage.getItem("token")
     if (!token) {
         throw new Error("Authentication required")
@@ -54,9 +55,11 @@ export async function checkAnswer(questionId: string, gameToken: string, answer:
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ gameToken, questionId, answer }),
+        body: JSON.stringify({ gameState, questionId, answer }),
     })
+    console.log("Check answer response:", response)
     const result = await handleResponse(response)
     if (!result || !result.data) {
         throw new Error("Question not found")
