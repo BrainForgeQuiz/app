@@ -58,6 +58,7 @@ export class GameService {
     return {
       success: true,
       data: gameToken,
+      tries: this.addUpTries(game.listOfQuestions),
       error: null,
     };
   }
@@ -111,6 +112,14 @@ export class GameService {
       points += questions[i].score;
     }
     return points;
+  }
+
+  addUpTries(questions: QuestionSendBack[]) {
+    let tries = 0;
+    for (let i = 0; i < questions.length; i++) {
+      tries += questions[i].trys;
+    }
+    return tries;
   }
 
   getQuestions(getQuestionDto: GetQuestionDto, userId: string) {
@@ -202,6 +211,7 @@ export class GameService {
     return {
       success: true,
       gameStatus: gameStatus,
+      tries: this.addUpTries(gs.game.listOfQuestions),
       data: gameToken,
     };
   }
