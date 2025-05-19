@@ -15,12 +15,7 @@ export function UserProfile() {
   }
 
   return (
-    <motion.div
-      className="space-y-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
       <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-lg">
         <Avatar className="h-24 w-24 border-4 border-white dark:border-slate-800 shadow-md">
           <AvatarFallback className="text-2xl text-white">
@@ -30,9 +25,7 @@ export function UserProfile() {
         <div className="text-center sm:text-left">
           <h2 className="text-3xl font-bold">{user.username}</h2>
         </div>
-      </div>
-
-      <Card className="border border-slate-200 dark:border-slate-800">
+      </div><Card className="border border-slate-200 dark:border-slate-800">
         <CardContent className="p-6">
           <h3 className="font-semibold text-lg mb-4">Account Information</h3>
           <div className="space-y-4">
@@ -49,10 +42,9 @@ export function UserProfile() {
           </div>
         </CardContent>
       </Card>
-
-      <Button variant="destructive" className="w-full" onClick={logout}>
+      <Button variant="destructive" className="w-full mt-4" onClick={logout}>
         <LogOut className="mr-2 h-4 w-4" /> Logout
       </Button>
-    </motion.div>
+    </>
   )
 }

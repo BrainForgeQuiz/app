@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef, use } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { useAuthModal } from "@/context/auth-modal-context"
@@ -12,6 +12,7 @@ import { ArrowLeft, Loader2, Undo2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import type { Quiz, Question } from "@/types"
 import toast from "react-hot-toast"
+import { AnimatePresence } from "framer-motion"
 
 export default function TextQuizPage() {
   const params = useParams()
@@ -23,10 +24,13 @@ export default function TextQuizPage() {
   const [isQuizLoading, setIsQuizLoading] = useState(false)
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [gameToken, setGameToken] = useState<string | null>(null)
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [qLength, setQLength] = useState<number>(0)
+  const [quizCompleted, setQuizCompleted] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState<Question>()
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const hasFetched = useRef(false)
+  let questions: Question[] = []
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -47,13 +51,14 @@ export default function TextQuizPage() {
         }
         setQuiz(quizData)
         const token = await startGame(quizId)
-        setGameToken(token)
-        const questionData = await getQuestion(token)
+        setGameToken(token.data)
+        setQLength(token.tries)
+        const questionData = await getQuestion(token.data)
         if (!questionData) {
           setError("Failed to retrieve questions")
           return
         }
-        setQuestions([{ id: questionData.id, question: questionData.question }])
+        setCurrentQuestion({ id: questionData.id, question: questionData.question })
       } catch (err) {
         setError("Failed to fetch quiz or start game")
       } finally {
@@ -63,53 +68,44 @@ export default function TextQuizPage() {
     fetchQuiz()
   }, [isAuthenticated, quizId])
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1)
+  useEffect(() => {
+    if (quizCompleted) {
+      toast.success("Quiz completed!")
     }
-  }
+  }, [quizCompleted])
 
   const handleBackToHome = () => {
     router.push("/")
   }
 
   const handleCompleteQuiz = () => {
-    toast.success("Quiz completed!")
-    setCurrentQuestionIndex(questions.length)
+    setQuizCompleted(true)
+    setGameToken(null)
   }
 
   const handleSubmitAnswer = async (answer: string) => {
     if (!gameToken) return
     try {
-      setQuestions((prev) =>
-        prev.map((q, idx) =>
-          idx === currentQuestionIndex ? { ...q, userAnswer: answer } : q
-        )
-      )
-      const response = await checkAnswer(questions[currentQuestionIndex].id as string, gameToken, answer)
-      setGameToken(response)
-      if (response && response !== "COMPLETED") {
-        const questionData = await getQuestion(response)
+      questions.push({ id: currentQuestion?.id as string, question: currentQuestion?.question as string, userAnswer: answer })
+      const response = await checkAnswer(currentQuestion?.id as string, gameToken, answer)
+      setGameToken(response.data)
+      if (response && response.gameStatus !== 1) {
+        setQLength(response.tries + currentQuestionIndex + 1)
+        const questionData = await getQuestion(response.data)
         if (!questionData) {
           setError("Failed to retrieve next question")
           return
         }
-        setQuestions((prev) => {
-          if (quiz && prev.length >= quiz.questionCount) return prev
-          return [...prev, { id: questionData.id, question: questionData.question }]
-        })
-        setCurrentQuestionIndex((prev) => prev + 1)
-      } else if (response === "COMPLETED") {
+        setCurrentQuestion({ id: questionData.id, question: questionData.question })
+      } else if (response.gameStatus === 1) {
         handleCompleteQuiz()
       }
+      setCurrentQuestionIndex((prev) => prev + 1)
     } catch (err) {
       setError("Failed to check answer")
       console.error(err)
     }
   }
-
-  const quizCompleted = currentQuestionIndex >= questions.length
-  const currentQuestion = questions[currentQuestionIndex]
 
   if (isLoading || isQuizLoading) {
     return (
@@ -182,13 +178,13 @@ export default function TextQuizPage() {
               ))}
             </div>
             <div className="mt-8 flex justify-center gap-4">
-              <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
-                <Undo2 className="mr-2 h-4 w-4" />
-                Retake
-              </Button>
               <Button onClick={handleBackToHome} className="blue-gradient blue-gradient-hover text-white">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Home
+              </Button>
+              <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
+                <Undo2 className="mr-2 h-4 w-4" />
+                Retake
               </Button>
             </div>
           </div>
@@ -200,26 +196,28 @@ export default function TextQuizPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-3xl font-bold">{quiz.name}</h1>
             <Badge className="blue-gradient">{quiz.topic}</Badge>
           </div>
           <div className="flex justify-between items-center mb-6">
             <p className="text-muted-foreground">
-              Question {currentQuestionIndex + 1} of {quiz.questionCount}
+              Question {currentQuestionIndex + 1} of {qLength}
             </p>
           </div>
         </div>
-        {currentQuestion && (
-          <TextAnswerQuestion
-            question={currentQuestion}
-            questionNumber={currentQuestionIndex + 1}
-            onNext={currentQuestionIndex === quiz.questionCount - 1 ? handleCompleteQuiz : handleNextQuestion}
-            isLast={currentQuestionIndex === quiz.questionCount - 1}
-            onSubmitAnswer={handleSubmitAnswer}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {currentQuestion && (
+            <TextAnswerQuestion
+              key={currentQuestionIndex}
+              question={currentQuestion}
+              questionNumber={currentQuestionIndex + 1}
+              isLast={currentQuestionIndex === qLength - 1}
+              onSubmitAnswer={handleSubmitAnswer}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
