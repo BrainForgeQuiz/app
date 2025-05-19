@@ -6,9 +6,9 @@ import { useAuth } from "@/context/auth-context"
 import { useAuthModal } from "@/context/auth-modal-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreateQuizForm } from "@/components/create-quiz-form"
 import { UserProfile } from "@/components/user-profile"
 import { Button } from "@/components/ui/button"
+import { TextQuizCreator } from "@/components/quiz-creator"
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -73,16 +73,16 @@ export default function Profile() {
             </Card>
           </TabsContent>
           <TabsContent value="create-quiz" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Create New Quiz</CardTitle>
-                <CardDescription>Create a new quiz to share with others</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CreateQuizForm />
-              </CardContent>
-            </Card>
-          </TabsContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create New Quiz</CardTitle>
+                  <CardDescription>Create a new quiz to share with others</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TextQuizCreator />
+                </CardContent>
+              </Card>
+            </TabsContent>
         </Tabs>
       ) : null}
     </div>

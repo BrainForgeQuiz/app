@@ -16,9 +16,11 @@ export interface Quiz {
 }
 
 export interface Question {
-  id: string
+  id?: string
   question: string
   userAnswer?: string
+  correctAnswer?: string
+  points?: string
 }
 
 export interface AuthResponse {

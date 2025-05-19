@@ -50,3 +50,21 @@ export async function deleteQuiz(quizId: string) {
 
   return handleResponse(response)
 }
+
+export async function addQuestionToQuiz(questionData: {quizId: string, question: string; answer: string, points: number }) {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    throw new Error("Authentication required")
+  }
+
+  const response = await fetch(`${API_URL}/question`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(questionData),
+  })
+
+  return handleResponse(response)
+}

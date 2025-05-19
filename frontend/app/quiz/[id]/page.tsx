@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, use } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { useAuthModal } from "@/context/auth-modal-context"
-import { TextAnswerQuestion } from "@/components/text-answer-question"
+import { TextAnswerQuestion } from "@/components/quiz-view"
 import { fetchQuizById } from "@/lib/quiz_api"
 import { startGame, getQuestion, checkAnswer } from "@/lib/game_api"
 import { Button } from "@/components/ui/button"
@@ -86,7 +86,7 @@ export default function TextQuizPage() {
           idx === currentQuestionIndex ? { ...q, userAnswer: answer } : q
         )
       )
-      const response = await checkAnswer(questions[currentQuestionIndex].id, gameToken, answer)
+      const response = await checkAnswer(questions[currentQuestionIndex].id as string, gameToken, answer)
       setGameToken(response)
       if (response && response !== "COMPLETED") {
         const questionData = await getQuestion(response)
