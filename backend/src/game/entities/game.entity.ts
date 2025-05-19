@@ -16,6 +16,7 @@ export class Game {
 
 export class QuestionSendBack {
   id: string;
+  question: string;
   trys: number;
   score: number;
 }
