@@ -21,7 +21,7 @@ export async function startGame(quizId: string) {
         throw new Error("Game token not found")
     }
 
-    return gameToken.data
+    return gameToken
 }
 
 export async function getQuestion(gameState: string) {
@@ -64,5 +64,5 @@ export async function checkAnswer(questionId: string, gameState: string, answer:
     if (!result || !result.data) {
         throw new Error("Question not found")
     }
-    return result.data
+    return result
 }

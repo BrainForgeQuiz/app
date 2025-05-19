@@ -10,7 +10,6 @@ import { Input } from "./ui/input"
 interface TextAnswerQuestionProps {
   question: Question
   questionNumber: number
-  onNext: () => void
   isLast: boolean
   onSubmitAnswer?: (answer: string) => void
 }
@@ -18,7 +17,6 @@ interface TextAnswerQuestionProps {
 export function TextAnswerQuestion({
   question,
   questionNumber,
-  onNext,
   isLast,
   onSubmitAnswer,
 }: TextAnswerQuestionProps) {
@@ -26,7 +24,7 @@ export function TextAnswerQuestion({
 
   useEffect(() => {
     setAnswer("")
-  }, [question.id])
+  }, [questionNumber])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswer(e.target.value)
@@ -36,7 +34,6 @@ export function TextAnswerQuestion({
     if (onSubmitAnswer) {
       onSubmitAnswer(answer)
     }
-    onNext()
   }
 
   return (

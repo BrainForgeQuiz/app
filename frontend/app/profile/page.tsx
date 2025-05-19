@@ -57,7 +57,7 @@ export default function Profile() {
     <div className="container mx-auto px-4 py-8">
       {user ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="grid grid-cols-3 mb-0 md:mb-6">
+          <div className="grid grid-cols-3 mb-4 md:mb-6">
             <h1 className="text-3xl font-bold md:col-span-1">Your Profile</h1>
             <div className="lg:col-span-1 col-span-2 flex justify-center">
               <TabsList className="grid w-full max-w-md grid-cols-3">
