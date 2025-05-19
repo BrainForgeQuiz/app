@@ -38,6 +38,11 @@ export class QuizController {
     return this.quizService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.quizService.findOne(id);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
