@@ -33,7 +33,7 @@ export default function TextQuizPage() {
   }, [isLoading, isAuthenticated])
 
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (isLoading || !isAuthenticated) return
     setIsQuizLoading(true)
     fetchQuizById(quizId)
       .then((data) => {
@@ -43,7 +43,7 @@ export default function TextQuizPage() {
       })
       .catch(() => setError("Failed to load quiz. It might not exist or has been removed."))
       .finally(() => setIsQuizLoading(false))
-  }, [quizId, isAuthenticated])
+  }, [quizId, isAuthenticated, isLoading])
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
