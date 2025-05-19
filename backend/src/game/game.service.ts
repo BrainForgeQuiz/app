@@ -60,12 +60,14 @@ export class GameService {
   }
 
   checkGameOver(questions: QuestionSendBack[]) {
+    let gameOver = true;
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].trys > 0) {
-        return false;
+        gameOver = false;
+        break;
       }
     }
-    return true;
+    return gameOver;
   }
 
   getRandomQuestion(questions: QuestionSendBack[]) {
@@ -187,12 +189,14 @@ export class GameService {
       };
     }
 
-    const gameToken = this.jwtService.signAsync(gs, { expiresIn: '2h' });
+    const gameToken = await this.jwtService.signAsync(
+      { game: gs.game },
+      { expiresIn: '2h' },
+    );
 
     return {
       success: true,
       data: gameToken,
-      error: null,
     };
   }
 }
