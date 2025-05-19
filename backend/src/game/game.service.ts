@@ -94,16 +94,31 @@ export class GameService {
   }
 
   async savePoints(userId: string, points: number) {
-    return await this.dbService.db
+    const currentPoints = await this.dbService.db
+      .select({
+        points: UserTable.points,
+      })
+      .from(UserTable)
+      .where(eq(UserTable.id, userId));
+    if (currentPoints.length === 0) {
+      return {
+        success: false,
+        data: null,
+        error: 'User not found',
+      };
+    }
+    
+    const res = await this.dbService.db
       .update(UserTable)
       .set({
-        points: points,
+        points: points + currentPoints[0].points,
       })
       .where(eq(UserTable.id, userId))
       .returning({
         points: UserTable.points,
       })
       .execute();
+    return res[0];
   }
 
   addUpPoints(questions: QuestionSendBack[]) {
@@ -196,7 +211,7 @@ export class GameService {
       return {
         success: true,
         gameStatus: GameStatus.GAMEOVER,
-        data: this.savePoints(
+        data: await this.savePoints(
           userId,
           this.addUpPoints(gs.game.listOfQuestions),
         ),
