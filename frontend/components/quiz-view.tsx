@@ -12,7 +12,7 @@ interface TextAnswerQuestionProps {
   questionNumber: number
   onNext: () => void
   isLast: boolean
-  onAnswerChange: (answer: string) => void
+  onSubmitAnswer?: (answer: string) => void
 }
 
 export function TextAnswerQuestion({
@@ -20,7 +20,7 @@ export function TextAnswerQuestion({
   questionNumber,
   onNext,
   isLast,
-  onAnswerChange,
+  onSubmitAnswer,
 }: TextAnswerQuestionProps) {
   const [answer, setAnswer] = useState("")
 
@@ -30,7 +30,13 @@ export function TextAnswerQuestion({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAnswer(e.target.value)
-    onAnswerChange(e.target.value)
+  }
+
+  const handleButtonClick = () => {
+    if (onSubmitAnswer) {
+      onSubmitAnswer(answer)
+    }
+    onNext()
   }
 
   return (
@@ -61,7 +67,7 @@ export function TextAnswerQuestion({
             </div>
         </CardContent>
         <CardFooter className="flex justify-end pt-6 border-t border-slate-100 dark:border-slate-800">
-          <Button onClick={onNext} className="blue-gradient blue-gradient-hover text-white">
+          <Button onClick={handleButtonClick} type="submit" className="blue-gradient blue-gradient-hover text-white">
             {isLast ? "Finish Quiz" : "Next Question"}
           </Button>
         </CardFooter>
