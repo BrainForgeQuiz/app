@@ -42,7 +42,7 @@ export function UserProfile() {
           </div>
         </CardContent>
       </Card>
-      <Button variant="destructive" className="w-full" onClick={logout}>
+      <Button variant="destructive" className="w-full mt-4" onClick={logout}>
         <LogOut className="mr-2 h-4 w-4" /> Logout
       </Button>
     </>

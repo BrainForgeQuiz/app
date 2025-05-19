@@ -42,11 +42,7 @@ export function TextQuizCreator() {
     const updatedQuestions = questions.filter((_, i) => i !== index)
     setQuestions(updatedQuestions)
 
-    if (currentQuestionIndex === index) {
-      setCurrentQuestionIndex(null)
-    } else if (currentQuestionIndex !== null && currentQuestionIndex > index) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
-    }
+    setCurrentQuestionIndex(index - 1)
   }
 
   const moveQuestionUp = (index: number) => {
@@ -181,46 +177,6 @@ export function TextQuizCreator() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Questions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {questions.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No questions yet</p>
-              ) : (
-                <div className="space-y-2">
-                  {questions.map((question, index) => (
-                    <div
-                      key={`question-${index}`}
-                      className={`p-3 rounded-md flex justify-between items-center cursor-pointer ${currentQuestionIndex === index
-                        ? "bg-[#eff6ff] dark:bg-[#1e3a8a]/30 border border-[#2563eb] dark:border-[#3b82f6]"
-                        : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#2563eb] dark:hover:border-[#3b82f6]"
-                        }`}
-                      onClick={() => setCurrentQuestionIndex(index)}
-                    >
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/50 text-[#1e40af] dark:text-[#93c5fd] p-1 rounded-full h-6 w-6 flex items-center justify-center text-xs flex-shrink-0">
-                          {index + 1}
-                        </span>
-                        <span className="truncate">{question.question || "Untitled Question"}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Button
-                onClick={addNewQuestion}
-                className="w-full mt-4 border-[#2563eb] text-[#2563eb] hover:bg-[#eff6ff] dark:hover:bg-[#172554]"
-                variant="outline"
-              >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Question
-              </Button>
-            </div>
-          </CardContent>
-        </Card >
         <Button onClick={saveQuiz} disabled={isSaving} className="blue-gradient blue-gradient-hover text-white w-full mt-4">
           {isSaving ? (
             <>
@@ -236,7 +192,7 @@ export function TextQuizCreator() {
         </Button>
       </div>
 
-      <div className="md:col-span-2">
+      <div className="md:col-span-1 space-y-4">
         {currentQuestionIndex !== null && questions[currentQuestionIndex] ? (
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -288,6 +244,50 @@ export function TextQuizCreator() {
             </div>
           </div>
         )}
+      </div>
+      <div className="md:col-span-1 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Questions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="overflow-y-auto max-h-[400px] min-h-[250px]">
+                {questions.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-4">No questions yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {questions.map((question, index) => (
+                      <div
+                        key={`question-${index}`}
+                        className={`p-3 rounded-md flex justify-between items-center cursor-pointer ${currentQuestionIndex === index
+                          ? "bg-[#eff6ff] dark:bg-[#1e3a8a]/30 border border-[#2563eb] dark:border-[#3b82f6]"
+                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#2563eb] dark:hover:border-[#3b82f6]"
+                          }`}
+                        onClick={() => setCurrentQuestionIndex(index)}
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/50 text-[#1e40af] dark:text-[#93c5fd] p-1 rounded-full h-6 w-6 flex items-center justify-center text-xs flex-shrink-0">
+                            {index + 1}
+                          </span>
+                          <span className="truncate">{question.question || "Untitled Question"}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <Button
+                onClick={addNewQuestion}
+                className="w-full mt-4 border-[#2563eb] text-[#2563eb] hover:bg-[#eff6ff] dark:hover:bg-[#172554]"
+                variant="outline"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Question
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

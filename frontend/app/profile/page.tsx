@@ -55,14 +55,20 @@ export default function Profile() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
       {user ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-lg grid-cols-3 mb-8">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="my-quizzes">My Quizzes</TabsTrigger>
-            <TabsTrigger value="create-quiz">Create Quiz</TabsTrigger>
-          </TabsList>
+          <div className="grid grid-cols-3 mb-0 md:mb-6">
+            <h1 className="text-3xl font-bold md:col-span-1">Your Profile</h1>
+            <div className="lg:col-span-1 col-span-2 flex justify-center">
+              <TabsList className="grid w-full max-w-md grid-cols-3">
+                <TabsTrigger value="profile">Profile</TabsTrigger>
+                <TabsTrigger value="my-quizzes">My Quizzes</TabsTrigger>
+                <TabsTrigger value="create-quiz">Create Quiz</TabsTrigger>
+              </TabsList>
+            </div>
+            <div className="lg:col-span-1" />
+          </div>
+
           <TabsContent value="profile" className="space-y-4">
             <Card>
               <CardHeader>
@@ -75,27 +81,27 @@ export default function Profile() {
             </Card>
           </TabsContent>
           <TabsContent value="my-quizzes" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>My Quizzes</CardTitle>
-                  <CardDescription>Manage quizzes you've created</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <UserQuizList />
-                </CardContent>
-              </Card>
-            </TabsContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>My Quizzes</CardTitle>
+                <CardDescription>Manage quizzes you've created</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UserQuizList />
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="create-quiz" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create New Quiz</CardTitle>
-                  <CardDescription>Create a new quiz to share with others</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <TextQuizCreator />
-                </CardContent>
-              </Card>
-            </TabsContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Quiz</CardTitle>
+                <CardDescription>Create a new quiz to share with others</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TextQuizCreator />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       ) : null}
     </div>
