@@ -112,7 +112,6 @@ export class GameService {
 
   getQuestions(getQuestionDto: GetQuestionDto, userId: string) {
     const gs: { game: Game } = this.jwtService.decode(getQuestionDto.gameState);
-    console.log('gs:', gs);
     if (!gs) {
       return {
         success: false,
