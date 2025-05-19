@@ -21,6 +21,7 @@ export class GameService {
     const dbCheck = await this.dbService.db
       .select({
         id: SimpleQuestionTable.id,
+        question: SimpleQuestionTable.question,
       })
       .from(SimpleQuestionTable)
       .where(eq(SimpleQuestionTable.quizId, startGameDto.quizId));
@@ -37,6 +38,7 @@ export class GameService {
     for (let i = 0; i < dbCheck.length; i++) {
       questions.push({
         id: dbCheck[i].id,
+        question: dbCheck[i].question,
         trys: 3,
         score: 0,
       });
