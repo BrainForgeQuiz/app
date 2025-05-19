@@ -1,7 +1,6 @@
 "use client"
 
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import type { Question } from "@/types"
 import { Input } from "./ui/input"
 
