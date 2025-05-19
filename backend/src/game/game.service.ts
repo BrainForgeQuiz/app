@@ -3,7 +3,7 @@ import { StartGameDto } from './dto/start-game.dto';
 import { CheckGameDto } from './dto/check-game.dto';
 import { DbService } from '../db/db.service';
 import { SimpleQuestionTable } from '../db/schema/question';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { Game, QuestionSendBack } from './entities/game.entity';
 import { JwtService } from '@nestjs/jwt';
 import { GetQuestionDto } from './dto/get-question.dto';
@@ -16,6 +16,30 @@ export class GameService {
     private readonly dbService: DbService,
     private readonly jwtService: JwtService,
   ) {}
+
+  async getLeaderBoard(limit: number) {
+    const dbCheck = await this.dbService.db
+      .select({
+        id: UserTable.id,
+        username: UserTable.username,
+        points: UserTable.points,
+      })
+      .from(UserTable)
+      .orderBy(desc(UserTable.points))
+      .limit(limit);
+    if (dbCheck.length === 0) {
+      return {
+        success: false,
+        data: null,
+        error: 'No users found',
+      };
+    }
+    return {
+      success: true,
+      data: dbCheck,
+      error: null,
+    };
+  }
 
   async start(startGameDto: StartGameDto, userId: string) {
     const dbCheck = await this.dbService.db
@@ -107,7 +131,6 @@ export class GameService {
         error: 'User not found',
       };
     }
-    
     const res = await this.dbService.db
       .update(UserTable)
       .set({

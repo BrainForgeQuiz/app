@@ -1,10 +1,19 @@
-import { Controller, Get, Body, Post, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Post,
+  UseGuards,
+  Req,
+  Param,
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import { StartGameDto } from './dto/start-game.dto';
 import { CheckGameDto } from './dto/check-game.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { GetQuestionDto } from './dto/get-question.dto';
+import LimitDto from './dto/limit.dto';
 
 @Controller('game')
 export class GameController {
@@ -32,6 +41,18 @@ export class GameController {
       };
     }
     return this.gameService.getQuestions(getQuestionDto, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/leader/:limit')
+  getLeaderBoard(@Param('limit') limitDto: LimitDto, @Req() req: Request) {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.gameService.getLeaderBoard(limitDto.limit);
   }
 
   @UseGuards(JwtAuthGuard)
