@@ -8,6 +8,7 @@ import { Game, QuestionSendBack } from './entities/game.entity';
 import { JwtService } from '@nestjs/jwt';
 import { GetQuestionDto } from './dto/get-question.dto';
 import { UserTable } from '../db/schema/user';
+import { GameStatus } from './entities/game.status';
 
 @Injectable()
 export class GameService {
@@ -170,17 +171,20 @@ export class GameService {
         error: 'Question not found',
       };
     }
-
+    let gameStatus: GameStatus;
     if (answer[0].answer === checkGameDto.answer) {
       gs.game.listOfQuestions[question].score += 1;
       gs.game.listOfQuestions[question].trys -= 1;
+      gameStatus = GameStatus.CORRECT;
     } else {
       gs.game.listOfQuestions[question].trys += 1;
+      gameStatus = GameStatus.WRONG;
     }
 
     if (this.checkGameOver(gs.game.listOfQuestions)) {
       return {
         success: true,
+        gameStatus: GameStatus.GAMEOVER,
         data: this.savePoints(
           userId,
           this.addUpPoints(gs.game.listOfQuestions),
@@ -195,6 +199,7 @@ export class GameService {
 
     return {
       success: true,
+      gameStatus: gameStatus,
       data: gameToken,
     };
   }
