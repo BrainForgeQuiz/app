@@ -223,7 +223,14 @@ export class QuizService {
         error: 'You are not the owner of this quiz',
       };
     }
-
+    const questionRes = await this.dbService.db
+      .delete(SimpleQuestionTable)
+      .where(eq(SimpleQuestionTable.quizId, id))
+      .returning({ id: SimpleQuestionTable.id })
+      .execute();
+    if (questionRes.length > 0) {
+      console.log('Deleted questions:', questionRes);
+    } else console.log('No questions to delete for quiz:', id);
     const dbRes = await this.dbService.db
       .delete(QuizTable)
       .where(eq(QuizTable.id, id))

@@ -20,7 +20,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile")
 
   useEffect(() => {
-    if (tabParam && ["profile", "create-quiz"].includes(tabParam)) {
+    if (tabParam && ["profile", "my-quizzes", "create-quiz"].includes(tabParam)) {
       setActiveTab(tabParam)
     }
   }, [tabParam])
@@ -91,7 +91,7 @@ export default function Profile() {
                 <CardDescription>Manage quizzes you've created</CardDescription>
               </CardHeader>
               <CardContent>
-                <UserQuizList />
+                <UserQuizList setTab={setActiveTab} />
               </CardContent>
             </Card>
           </TabsContent>

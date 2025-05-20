@@ -51,6 +51,21 @@ export async function deleteQuiz(quizId: string) {
   return handleResponse(response)
 }
 
+export async function fetchUserQuizzes() {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    throw new Error("Authentication required")
+  }
+
+  const response = await fetch(`${API_URL}/quiz/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return handleResponse(response)
+}
+
 export async function addQuestionToQuiz(questionData: {quizId: string, question: string; answer: string, points: number }) {
   const token = localStorage.getItem("token")
   if (!token) {
