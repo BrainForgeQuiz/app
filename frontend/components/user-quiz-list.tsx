@@ -128,22 +128,14 @@ export function UserQuizList({ setTab }: { setTab: (tab: string) => void }) {
               <Card className="border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-md transition-shadow duration-300">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-center">
-                    <div>
+                    <div className="flex items-center gap-2">
                       <h3 className="font-medium text-lg">{quiz.name}</h3>
-                      <div className="flex items-center gap-3 mt-2">
                         <Badge
                           variant="outline"
                           className="bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe] dark:bg-[#172554]/30 dark:text-[#93c5fd] dark:border-[#1e40af]"
                         >
                           {quiz.topic}
                         </Badge>
-                        {quiz.createdAt && (
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {new Date(quiz.createdAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Link href={`/quiz/${quiz.id}`}>
