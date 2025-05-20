@@ -57,7 +57,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
 
   if (isLoading) {
     return (
-      <Card className="border border-slate-200 dark:border-slate-800">
+      <Card className="border dark:border-slate-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
@@ -84,7 +84,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
 
   if(!isAuthenticated) {
     return (
-      <Card className="border border-slate-200 dark:border-slate-800">
+      <Card className="border dark:border-slate-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
@@ -100,7 +100,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
 
   if (error) {
     return (
-      <Card className="border border-slate-200 dark:border-slate-800">
+      <Card className="border dark:border-slate-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
@@ -116,7 +116,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
 
   if (leaderboard.length === 0) {
     return (
-      <Card className="border border-slate-200 dark:border-slate-800">
+      <Card className="border dark:border-slate-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
@@ -131,8 +131,8 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
   }
 
   return (
-    <Card className="border border-slate-200 dark:border-slate-800">
-      <CardHeader className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+    <Card className="border dark:border-slate-800">
+      <CardHeader className="dark:bg-slate-800/50 border-b dark:border-slate-800">
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
           Leaderboard
@@ -148,25 +148,21 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className={`flex items-center p-3 rounded-lg ${
                 index === 0
-                  ? "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
-                  : "bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700"
+                  ? "dark:bg-yellow-900/20 border dark:border-yellow-800"
+                  : "dark:bg-slate-800 border dark:border-slate-700"
               }`}
             >
-              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-700 mr-3">
+              <div className="flex items-center justify-center h-8 w-8 rounded-full dark:bg-slate-700 mr-3">
                 {index < 3 ? (
                   <Medal className={`h-5 w-5 ${getMedalColor(index)}`} />
                 ) : (
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{index + 1}</span>
+                  <span className="text-sm font-medium dark:text-slate-300">{index + 1}</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center">
                   <h3 className="font-medium truncate">{entry.username}</h3>
                   {entry.username === user?.username && <Badge className="ml-2 blue-gradient text-white text-xs">You</Badge>}
-                </div>
-                <div className="flex items-center text-xs text-muted-foreground mt-1">
-                  <User className="h-3 w-3 mr-1" />
-                  <span>xd</span>
                 </div>
               </div>
               <div className="text-right">

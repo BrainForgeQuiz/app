@@ -149,8 +149,8 @@ export default function TextQuizPage() {
   if (error || !quiz) {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto text-center p-8 bg-white dark:bg-slate-800 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Quiz Not Found</h2>
+        <div className="max-w-2xl mx-auto text-center p-8 dark:bg-slate-800 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold dark:text-red-400 mb-4">Quiz Not Found</h2>
           <p className="text-muted-foreground mb-6">{error || "This quiz doesn't exist or has been removed."}</p>
           <Button onClick={handleBackToHome} className="mx-auto">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -174,19 +174,19 @@ export default function TextQuizPage() {
               <h2 className="text-2xl font-bold mb-6 blue-gradient-text">Your Answers</h2>
               <div className="space-y-6">
                 {Object.entries(questions).map(([id, question], index) => (
-                  <div key={`${id}-${index}`} className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div key={`${id}-${index}`} className="border dark:border-slate-700 rounded-lg p-6">
                     <div className="flex items-start gap-3 mb-4">
-                      <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/30 text-[#1e40af] dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
+                      <span className="dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
                         {index + 1}
                       </span>
                       <h3 className="text-lg font-medium">{question.question}</h3>
                     </div>
                     <div className="ml-11">
                       <div className="mb-2 flex gap-4">
-                        <span className="text-green-600 dark:text-green-400 font-semibold">
+                        <span className="dark:text-green-400 font-semibold">
                           Right: {question.right}
                         </span>
-                        <span className="text-red-600 dark:text-red-400 font-semibold">
+                        <span className="dark:text-red-400 font-semibold">
                           Wrong: {question.wrong}
                         </span>
                       </div>
