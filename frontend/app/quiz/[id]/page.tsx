@@ -90,7 +90,6 @@ export default function TextQuizPage() {
       const response = await checkAnswer(currentQuestion?.id as string, gameToken, answer)
       setGameToken(response.data)
       if(response && response.gameStatus !== null) {
-        toast.success("xd")
         setQuestions((prev) => {
           const prevEntry = prev[currentQuestion?.id as string] || { question: currentQuestion?.question ?? "", right: 0, wrong: 0 }
           return {
