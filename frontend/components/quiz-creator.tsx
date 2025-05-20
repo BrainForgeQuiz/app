@@ -220,7 +220,7 @@ export function TextQuizCreator() {
                   variant="ghost"
                   size="icon"
                   onClick={() => deleteQuestion(currentQuestionIndex)}
-                  className="h-8 w-8 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                  className="h-8 w-8 dark:text-red-400 dark:hover:text-red-300"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -261,13 +261,13 @@ export function TextQuizCreator() {
                       <div
                         key={`question-${index}`}
                         className={`p-3 rounded-md flex justify-between items-center cursor-pointer ${currentQuestionIndex === index
-                          ? "bg-[#eff6ff] dark:bg-[#1e3a8a]/30 border border-[#2563eb] dark:border-[#3b82f6]"
-                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#2563eb] dark:hover:border-[#3b82f6]"
+                          ? "dark:bg-[#1e3a8a]/30 border dark:border-[#3b82f6]"
+                          : "dark:bg-slate-800 border dark:border-slate-700 dark:hover:border-[#3b82f6]"
                           }`}
                         onClick={() => setCurrentQuestionIndex(index)}
                       >
                         <div className="flex items-center gap-2 overflow-hidden">
-                          <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/50 text-[#1e40af] dark:text-[#93c5fd] p-1 rounded-full h-6 w-6 flex items-center justify-center text-xs flex-shrink-0">
+                          <span className="dark:bg-[#1e3a8a]/50 dark:text-[#93c5fd] p-1 rounded-full h-6 w-6 flex items-center justify-center text-xs flex-shrink-0">
                             {index + 1}
                           </span>
                           <span className="truncate">{question.question || "Untitled Question"}</span>
@@ -279,7 +279,7 @@ export function TextQuizCreator() {
               </div>
               <Button
                 onClick={addNewQuestion}
-                className="w-full mt-4 border-[#2563eb] text-[#2563eb] hover:bg-[#eff6ff] dark:hover:bg-[#172554]"
+                className="w-full mt-4 border-[#2563eb] text-[#2563eb] dark:hover:bg-[#172554]"
                 variant="outline"
               >
                 <PlusCircle className="mr-2 h-4 w-4" />

@@ -1,7 +1,7 @@
 export interface User {
   id: string
   username: string
-  email?: string
+  points: number
   iat?: number
   exp?: number
 }
@@ -21,6 +21,12 @@ export interface Question {
   userAnswer?: string
   correctAnswer?: string
   points?: string
+}
+
+export interface LeaderboardEntry {
+  id: string
+  username: string
+  points: number
 }
 
 export interface AuthResponse {

@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           refreshUserToken()
         }
       },
-      14 * 60 * 1000,
+      5 * 60 * 1000,
     )
 
     return () => clearInterval(refreshInterval)

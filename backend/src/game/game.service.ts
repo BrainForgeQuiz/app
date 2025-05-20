@@ -141,7 +141,7 @@ export class GameService {
         points: UserTable.points,
       })
       .execute();
-    return res[0];
+    return {pointsBefore: currentPoints[0].points, pointsAfter: res[0].points};
   }
 
   addUpPoints(questions: QuestionSendBack[]) {

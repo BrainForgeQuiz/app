@@ -24,7 +24,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark">
           <AuthProvider>
             <AuthModalProvider>
-              <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+              <div className="min-h-screen bg-gradient-to-b dark:from-slate-950 dark:to-slate-900">
                 <Header />
                 {children}
                 <Toaster position="top-center" />

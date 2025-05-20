@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import type { Quiz, Question } from "@/types"
 import toast from "react-hot-toast"
 import { AnimatePresence } from "framer-motion"
+import { QuizLeaderboard } from "@/components/quiz-leaderboard"
 
 export default function TextQuizPage() {
   const params = useParams()
@@ -30,13 +31,13 @@ export default function TextQuizPage() {
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const hasFetched = useRef(false)
-  let questions: Question[] = []
+  const [questions, setQuestions] = useState({} as Record<string, { question: string; right: number; wrong: number }>)
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       openLogin()
     }
-  }, [isLoading, isAuthenticated, openLogin])
+  }, [isLoading, isAuthenticated])
 
   useEffect(() => {
     if (!isAuthenticated || hasFetched.current) return
@@ -86,10 +87,23 @@ export default function TextQuizPage() {
   const handleSubmitAnswer = async (answer: string) => {
     if (!gameToken) return
     try {
-      questions.push({ id: currentQuestion?.id as string, question: currentQuestion?.question as string, userAnswer: answer })
       const response = await checkAnswer(currentQuestion?.id as string, gameToken, answer)
       setGameToken(response.data)
-      if (response && response.gameStatus !== 1) {
+      if(response && response.gameStatus !== null) {
+        toast.success("xd")
+        setQuestions((prev) => {
+          const prevEntry = prev[currentQuestion?.id as string] || { question: currentQuestion?.question ?? "", right: 0, wrong: 0 }
+          return {
+            ...prev,
+            [currentQuestion?.id as string]: {
+              question: currentQuestion?.question ?? "",
+              right: response.gameStatus === 0 || response.gameStatus === 1 ? prevEntry.right + 1 : prevEntry.right,
+              wrong: response.gameStatus === 2 ? prevEntry.wrong + 1 : prevEntry.wrong,
+            },
+          }
+        })
+      }
+      if (response.gameStatus !== 1) {
         setQLength(response.tries + currentQuestionIndex + 1)
         const questionData = await getQuestion(response.data)
         if (!questionData) {
@@ -118,7 +132,7 @@ export default function TextQuizPage() {
       </div>
     )
   }
-  
+
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[50vh]">
@@ -131,12 +145,12 @@ export default function TextQuizPage() {
       </div>
     )
   }
-  
+
   if (error || !quiz) {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto text-center p-8 bg-white dark:bg-slate-800 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">Quiz Not Found</h2>
+        <div className="max-w-2xl mx-auto text-center p-8 dark:bg-slate-800 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold dark:text-red-400 mb-4">Quiz Not Found</h2>
           <p className="text-muted-foreground mb-6">{error || "This quiz doesn't exist or has been removed."}</p>
           <Button onClick={handleBackToHome} className="mx-auto">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -150,43 +164,51 @@ export default function TextQuizPage() {
   if (quizCompleted) {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2">Quiz Completed</h1>
             <p className="text-muted-foreground">Thank you for completing the quiz!</p>
           </div>
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold mb-6 blue-gradient-text">Your Answers</h2>
-            <div className="space-y-6">
-              {questions.map((question, index) => (
-                <div key={`${question.id}-${index}`} className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-[#dbeafe] dark:bg-[#1e3a8a]/30 text-[#1e40af] dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
-                      {index + 1}
-                    </span>
-                    <h3 className="text-lg font-medium">{question.question}</h3>
-                  </div>
-                  <div className="ml-11">
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Your Answer:</h4>
-                      <div className="p-3 bg-[#eff6ff] dark:bg-[#1e3a8a]/20 rounded-md border border-[#bfdbfe] dark:border-[#1e40af]">
-                        <p className="whitespace-pre-wrap">{question.userAnswer || "No answer provided"}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 dark:bg-slate-800 rounded-lg shadow-lg p-8">
+            <div className="col-span-1">
+              <h2 className="text-2xl font-bold mb-6 blue-gradient-text">Your Answers</h2>
+              <div className="space-y-6">
+                {Object.entries(questions).map(([id, question], index) => (
+                  <div key={`${id}-${index}`} className="border dark:border-slate-700 rounded-lg p-6">
+                    <div className="flex items-start gap-3 mb-4">
+                      <span className="dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
+                        {index + 1}
+                      </span>
+                      <h3 className="text-lg font-medium">{question.question}</h3>
+                    </div>
+                    <div className="ml-11">
+                      <div className="mb-2 flex gap-4">
+                        <span className="dark:text-green-400 font-semibold">
+                          Right: {question.right}
+                        </span>
+                        <span className="dark:text-red-400 font-semibold">
+                          Wrong: {question.wrong}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
             </div>
-            <div className="mt-8 flex justify-center gap-4">
-              <Button onClick={handleBackToHome} className="blue-gradient blue-gradient-hover text-white">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home
-              </Button>
-              <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
-                <Undo2 className="mr-2 h-4 w-4" />
-                Retake
-              </Button>
+            <div className="col-span-1">
+              <QuizLeaderboard limit={10} />
             </div>
+          </div>
+          <div className="mt-8 flex justify-center gap-4">
+            <Button onClick={handleBackToHome} className="blue-gradient blue-gradient-hover text-white">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+            <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
+              <Undo2 className="mr-2 h-4 w-4" />
+              Retake
+            </Button>
           </div>
         </div>
       </div>

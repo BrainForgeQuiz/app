@@ -8,7 +8,7 @@ export default function Home() {
             <h1 className="text-5xl font-bold bg-clip-text">
               Welcome to BrainForgeQuiz
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-xl dark:text-slate-300 max-w-2xl mx-auto">
               Test your knowledge with our collection of quizzes on various topics. Create your own quizzes and share
               them with others.
             </p>

@@ -10,6 +10,7 @@ import { UserProfile } from "@/components/user-profile"
 import { Button } from "@/components/ui/button"
 import { TextQuizCreator } from "@/components/quiz-creator"
 import { UserQuizList } from "@/components/user-quiz-list"
+import { QuizLeaderboard } from "@/components/quiz-leaderboard"
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth()
@@ -19,7 +20,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile")
 
   useEffect(() => {
-    if (tabParam && ["profile", "create-quiz"].includes(tabParam)) {
+    if (tabParam && ["profile", "my-quizzes", "create-quiz"].includes(tabParam)) {
       setActiveTab(tabParam)
     }
   }, [tabParam])
@@ -70,15 +71,18 @@ export default function Profile() {
           </div>
 
           <TabsContent value="profile" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Profile</CardTitle>
-                <CardDescription>View and manage your profile information</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <UserProfile />
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="col-span-1 md:col-span-2">
+                <CardHeader>
+                  <CardTitle>User Profile</CardTitle>
+                  <CardDescription>View and manage your profile information</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UserProfile />
+                </CardContent>
+              </Card>
+              <QuizLeaderboard />
+            </div>
           </TabsContent>
           <TabsContent value="my-quizzes" className="space-y-4">
             <Card>
@@ -87,7 +91,7 @@ export default function Profile() {
                 <CardDescription>Manage quizzes you've created</CardDescription>
               </CardHeader>
               <CardContent>
-                <UserQuizList />
+                <UserQuizList setTab={setActiveTab} />
               </CardContent>
             </Card>
           </TabsContent>

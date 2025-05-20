@@ -31,7 +31,7 @@ export function QuizList() {
 
   if (isLoading) {
     return (
-      <div className="text-center p-8 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+      <div className="text-center p-8 dark:bg-slate-800/50 rounded-lg">
         <p className="text-muted-foreground my-4 text-lg">Loading...</p>
       </div>
     )
@@ -39,8 +39,8 @@ export function QuizList() {
 
   if (error) {
     return (
-      <div className="text-center p-8 bg-red-50 dark:bg-red-900/20 rounded-lg">
-        <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
+      <div className="text-center p-8 dark:bg-red-900/20 rounded-lg">
+        <p className="dark:text-red-400 mb-4">{error}</p>
         <Button onClick={() => window.location.reload()}>Try Again</Button>
       </div>
     )
@@ -48,7 +48,7 @@ export function QuizList() {
 
   if (quizzes.length === 0) {
     return (
-      <div className="text-center p-8 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+      <div className="text-center p-8 dark:bg-slate-800/50 rounded-lg">
         <p className="text-muted-foreground mb-4">No quizzes available at the moment.</p>
       </div>
     )
@@ -63,7 +63,7 @@ export function QuizList() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-          <Card className="overflow-hidden h-full flex flex-col border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow duration-300">
+          <Card className="overflow-hidden h-full flex flex-col dark:border-slate-800 hover:shadow-md transition-shadow duration-300">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <h3 className="text-xl font-bold">{quiz.name}</h3>
@@ -75,7 +75,7 @@ export function QuizList() {
                 A quiz about {quiz.topic.toLowerCase()} topics. Test your knowledge and challenge your friends!
               </p>
             </CardContent>
-            <CardFooter className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <CardFooter className="pt-4 border-t dark:border-slate-800">
               <Button
                 className="w-full"
                 asChild
