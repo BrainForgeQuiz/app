@@ -162,7 +162,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center">
                   <h3 className="font-medium truncate">{entry.username}</h3>
-                  {entry.username === user?.username && <Badge className="ml-2 blue-gradient text-white text-xs">You</Badge>}
+                  {entry.username === user?.username && <Badge className="ml-2 text-white text-xs">You</Badge>}
                 </div>
               </div>
               <div className="text-right">

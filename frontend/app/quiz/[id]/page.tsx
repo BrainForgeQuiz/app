@@ -170,17 +170,17 @@ export default function TextQuizPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 dark:bg-slate-800 rounded-lg shadow-lg p-8">
             <div className="col-span-1">
-              <h2 className="text-2xl font-bold mb-6 blue-gradient-text">Your Answers</h2>
+              <h2 className="text-2xl font-bold mb-6">Your Answers</h2>
               <div className="space-y-6">
                 {Object.entries(questions).map(([id, question], index) => (
                   <div key={`${id}-${index}`} className="border dark:border-slate-700 rounded-lg p-6">
-                    <div className="flex items-start gap-3 mb-4">
-                      <span className="dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
-                        {index + 1}
-                      </span>
-                      <h3 className="text-lg font-medium">{question.question}</h3>
-                    </div>
-                    <div className="ml-11">
+                    <div className="flex justify-between">
+                      <div className="flex items-start gap-4">
+                        <span className="dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        <h3 className="text-lg font-medium">{question.question}</h3>
+                      </div>
                       <div className="mb-2 flex gap-4">
                         <span className="dark:text-green-400 font-semibold">
                           Right: {question.right}
@@ -200,11 +200,11 @@ export default function TextQuizPage() {
             </div>
           </div>
           <div className="mt-8 flex justify-center gap-4">
-            <Button onClick={handleBackToHome} className="blue-gradient blue-gradient-hover text-white">
+            <Button onClick={handleBackToHome} className="text-white">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
             </Button>
-            <Button onClick={() => window.location.reload()} className="blue-gradient blue-gradient-hover text-white">
+            <Button onClick={() => window.location.reload()} className="text-white">
               <Undo2 className="mr-2 h-4 w-4" />
               Retake
             </Button>
@@ -220,7 +220,7 @@ export default function TextQuizPage() {
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-3xl font-bold">{quiz.name}</h1>
-            <Badge className="blue-gradient">{quiz.topic}</Badge>
+            <Badge>{quiz.topic}</Badge>
           </div>
           <div className="flex justify-between items-center mb-6">
             <p className="text-muted-foreground">

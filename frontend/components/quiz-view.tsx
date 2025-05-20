@@ -67,7 +67,7 @@ export function TextAnswerQuestion({
             </div>
           </CardContent>
           <CardFooter className="flex justify-end pt-6 border-t dark:border-slate-800">
-            <Button onClick={handleButtonClick} disabled={!answer} type="submit" className="blue-gradient blue-gradient-hover text-white">
+            <Button onClick={handleButtonClick} disabled={!answer} type="submit" className="text-white">
               {isLast ? "Finish Quiz" : "Next Question"}
             </Button>
           </CardFooter>
