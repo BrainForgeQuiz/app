@@ -23,6 +23,12 @@ export interface Question {
   points?: string
 }
 
+export interface LeaderboardEntry {
+  id: string
+  username: string
+  points: number
+}
+
 export interface AuthResponse {
   token: string
   user?: User

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { LogOut, User } from "lucide-react"
-import { motion } from "framer-motion"
 
 export function UserProfile() {
   const { user, logout } = useAuth()

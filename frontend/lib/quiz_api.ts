@@ -68,3 +68,16 @@ export async function addQuestionToQuiz(questionData: {quizId: string, question:
 
   return handleResponse(response)
 }
+
+export async function fetchLeaderboard(limit: number = 10) {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    throw new Error("Authentication required")
+  }
+  const response = await fetch(`${API_URL}/game/leader/${limit}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return handleResponse(response)
+}

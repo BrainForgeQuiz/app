@@ -13,7 +13,6 @@ import { CheckGameDto } from './dto/check-game.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { GetQuestionDto } from './dto/get-question.dto';
-import LimitDto from './dto/limit.dto';
 
 @Controller('game')
 export class GameController {
@@ -45,14 +44,14 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/leader/:limit')
-  getLeaderBoard(@Param('limit') limitDto: LimitDto, @Req() req: Request) {
+  getLeaderBoard(@Param('limit') limit: number, @Req() req: Request) {
     if (!req.user) {
       return {
         success: false,
         error: 'User not found',
       };
     }
-    return this.gameService.getLeaderBoard(limitDto.limit);
+    return this.gameService.getLeaderBoard(limit);
   }
 
   @UseGuards(JwtAuthGuard)
