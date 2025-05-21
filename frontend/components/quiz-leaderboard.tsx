@@ -31,7 +31,6 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
         const data = await fetchLeaderboard(limit)
         setLeaderboard(data.data)
       } catch (err) {
-        console.error("Failed to fetch leaderboard:", err)
         setError("Failed to load leaderboard data")
       } finally {
         setIsLoading(false)
@@ -41,7 +40,6 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
     getLeaderboard()
   }, [limit])
 
-  // Get medal color based on position
   const getMedalColor = (position: number) => {
     switch (position) {
       case 0:

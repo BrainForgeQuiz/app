@@ -116,7 +116,6 @@ export default function TextQuizPage() {
       setCurrentQuestionIndex((prev) => prev + 1)
     } catch (err) {
       setError("Failed to check answer")
-      console.error(err)
     }
   }
 

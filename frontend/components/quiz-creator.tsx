@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,24 +8,23 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import toast from "react-hot-toast"
 import { TextQuestionEditor } from "@/components/question-editor"
-import { PlusCircle, Save, Trash2, Loader2, ArrowUp, ArrowDown, Upload } from "lucide-react"
+import { PlusCircle, Save, Trash2, Loader2, ArrowUp, ArrowDown } from "lucide-react"
 import { createQuiz, addQuestionToQuiz } from "@/lib/quiz_api"
 import type { Question } from "@/types"
 
 const TOPICS = ["HISTORY", "LITERATURE"]
 
-export function TextQuizCreator() {
+export function TextQuizCreator({questionsImport = []}: {questionsImport?: Question[]}) {
   const [quizName, setQuizName] = useState("")
   const [quizTopic, setQuizTopic] = useState("")
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<Question[]>(questionsImport)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const addNewQuestion = () => {
     const newQuestion: Question = {
       question: "",
-      correctAnswer: "",
+      correctAnswer:"",
     }
     setQuestions([...questions, newQuestion])
     setCurrentQuestionIndex(questions.length)
