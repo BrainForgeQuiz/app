@@ -17,7 +17,21 @@ export class GameService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async getLeaderBoard(limit: number) {
+  async getLeaderBoard(limit: number, userId: string) {
+    const userCheck = await this.dbService.db
+      .select({
+        points: UserTable.points,
+      })
+      .from(UserTable)
+      .where(eq(UserTable.id, userId))
+      .execute();
+    if (userCheck.length === 0) {
+      return {
+        success: false,
+        data: null,
+        error: 'User not found',
+      };
+    }
     const dbCheck = await this.dbService.db
       .select({
         id: UserTable.id,
@@ -36,7 +50,10 @@ export class GameService {
     }
     return {
       success: true,
-      data: dbCheck,
+      data: {
+        leaderboard: dbCheck,
+        userPoints: userCheck[0].points,
+      },
       error: null,
     };
   }

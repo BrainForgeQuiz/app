@@ -51,7 +51,7 @@ export class GameController {
         error: 'User not found',
       };
     }
-    return this.gameService.getLeaderBoard(limit);
+    return this.gameService.getLeaderBoard(limit, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
