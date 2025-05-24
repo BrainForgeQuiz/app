@@ -1,4 +1,4 @@
-import { numeric, pgTable, text } from 'drizzle-orm/pg-core';
+import { integer, numeric, pgTable, text } from 'drizzle-orm/pg-core';
 import { createdAt, id, updatedAt } from '../schemaHelper';
 
 export const UserTable = pgTable('users', {
@@ -8,5 +8,5 @@ export const UserTable = pgTable('users', {
   password: text().notNull(),
   createdAt,
   updatedAt,
-  points: numeric().notNull().default('0'),
+  points: integer().notNull().default(0),
 });

@@ -1,4 +1,4 @@
-import { integer, numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { id } from '../schemaHelper';
 import { QuizTable } from './quiz';
 

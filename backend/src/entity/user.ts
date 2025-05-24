@@ -5,5 +5,5 @@ export class User {
   password: string;
   createdAt: Date | null;
   updatedAt: Date | null;
-  points: string;
+  points: number;
 }

@@ -19,6 +19,30 @@ export class AuthService {
     private readonly refConfigOp: ConfigType<typeof refConfig>,
   ) {}
 
+  async getUser(userId: string) {
+    const user = await this.dbService.db
+      .select({
+        id: UserTable.id,
+        username: UserTable.username,
+        email: UserTable.email,
+        points: UserTable.points,
+      })
+      .from(UserTable)
+      .where(eq(UserTable.id, userId))
+      .execute();
+    if (user.length === 0) {
+      return {
+        success: false,
+        error: 'User not found',
+        data: null,
+      };
+    }
+    return {
+      success: true,
+      data: user[0],
+    };
+  }
+
   async allUSer() {
     const users = await this.dbService.db.select().from(UserTable).execute();
     console.log('users:', users);

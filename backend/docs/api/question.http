@@ -1,0 +1,15 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=WebStorm
+
+###
+POST localhost:3000/question/
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNWI4YWIwYS03OTExLTRiOTctOTUyMi05MjRmZDg4NWUzNmMiLCJ1c2VybmFtZSI6IkFsbWEiLCJpYXQiOjE3NDc2NTgxODQsImV4cCI6MTc0NzY1OTA4NH0.VLpjshDHIZhlDZO-xYT6i_fFWLCB57oFNUmfdJgrfso
+
+{
+  "question": "Körte",
+  "answer": "Körte",
+  "quizId": "3183c364-c224-42f4-ac5b-196e24a8c142",
+  "points": 1
+}

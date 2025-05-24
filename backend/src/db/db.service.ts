@@ -7,6 +7,7 @@ import { Client } from 'pg';
 @Injectable()
 export class DbService implements OnModuleInit, OnModuleDestroy {
   private client = new Client({
+    host: process.env.POSTGRES_HOST,
     password: process.env.POSTGRES_PASSWORD,
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
