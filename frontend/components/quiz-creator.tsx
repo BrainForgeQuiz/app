@@ -14,17 +14,17 @@ import type { Question } from "@/types"
 
 const TOPICS = ["HISTORY", "LITERATURE"]
 
-export function TextQuizCreator() {
+export function TextQuizCreator({questionsImport = []}: {questionsImport?: Question[]}) {
   const [quizName, setQuizName] = useState("")
   const [quizTopic, setQuizTopic] = useState("")
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<Question[]>(questionsImport)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
   const addNewQuestion = () => {
     const newQuestion: Question = {
       question: "",
-      correctAnswer: "",
+      correctAnswer:"",
     }
     setQuestions([...questions, newQuestion])
     setCurrentQuestionIndex(questions.length)
@@ -177,15 +177,15 @@ export function TextQuizCreator() {
             </div>
           </CardContent>
         </Card>
-        <Button onClick={saveQuiz} disabled={isSaving} className="blue-gradient blue-gradient-hover text-white w-full mt-4">
+        <Button onClick={saveQuiz} disabled={isSaving} className="text-white w-full mt-4">
           {isSaving ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 animate-spin" />
               Saving...
             </>
           ) : (
             <>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="h-4" />
               Save Quiz
             </>
           )}
@@ -237,7 +237,7 @@ export function TextQuizCreator() {
               <p className="text-muted-foreground mb-4">
                 Select a question from the list or add a new one to edit
               </p>
-              <Button onClick={addNewQuestion} className="blue-gradient blue-gradient-hover text-white">
+              <Button onClick={addNewQuestion} className="text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Question
               </Button>

@@ -15,8 +15,6 @@ export async function startGame(quizId: string) {
         body: JSON.stringify({ quizId }),
     })
     const gameToken = await handleResponse(response)
-    console.log("Game token:", gameToken)
-    console.log("id:", quizId)
     if (!gameToken || !gameToken.data) {
         throw new Error("Game token not found")
     }
@@ -59,7 +57,6 @@ export async function checkAnswer(questionId: string, gameState: string, answer:
         },
         body: JSON.stringify({ gameState, questionId, answer }),
     })
-    console.log("Check answer response:", response)
     const result = await handleResponse(response)
     if (!result || !result.data) {
         throw new Error("Question not found")

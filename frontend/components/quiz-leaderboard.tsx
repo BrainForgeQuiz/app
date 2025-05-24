@@ -17,6 +17,7 @@ interface QuizLeaderboardProps {
 export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
   const { user, isAuthenticated } = useAuth()
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [myPoints, setMyPoints] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const fetchRef = useRef(false)
@@ -29,9 +30,9 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
       try {
         setIsLoading(true)
         const data = await fetchLeaderboard(limit)
-        setLeaderboard(data.data)
+        setLeaderboard(data.data.leaderboard || [])
+        setMyPoints(data.data.userPoints || 0)
       } catch (err) {
-        console.error("Failed to fetch leaderboard:", err)
         setError("Failed to load leaderboard data")
       } finally {
         setIsLoading(false)
@@ -41,7 +42,6 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
     getLeaderboard()
   }, [limit])
 
-  // Get medal color based on position
   const getMedalColor = (position: number) => {
     switch (position) {
       case 0:
@@ -82,7 +82,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
     )
   }
 
-  if(!isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <Card className="border dark:border-slate-800">
         <CardHeader>
@@ -134,8 +134,18 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
     <Card className="border dark:border-slate-800">
       <CardHeader className="dark:bg-slate-800/50 border-b dark:border-slate-800">
         <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
-          Leaderboard
+          <div className="flex items-center justify-between w-full">
+            <span className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              Leaderboard
+            </span>
+            {myPoints > 0 && (
+              <span className="flex items-center gap-1 text-sm dark:bg-slate-700 px-3 py-1 rounded-full">
+                <span>Your Points:</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">{myPoints} pts</span>
+              </span>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
@@ -146,11 +156,10 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`flex items-center p-3 rounded-lg ${
-                index === 0
+              className={`flex items-center p-3 rounded-lg ${index === 0
                   ? "dark:bg-yellow-900/20 border dark:border-yellow-800"
                   : "dark:bg-slate-800 border dark:border-slate-700"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-center h-8 w-8 rounded-full dark:bg-slate-700 mr-3">
                 {index < 3 ? (
@@ -162,7 +171,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center">
                   <h3 className="font-medium truncate">{entry.username}</h3>
-                  {entry.username === user?.username && <Badge className="ml-2 blue-gradient text-white text-xs">You</Badge>}
+                  {entry.username === user?.username && <Badge className="ml-2 text-white text-xs">You</Badge>}
                 </div>
               </div>
               <div className="text-right">

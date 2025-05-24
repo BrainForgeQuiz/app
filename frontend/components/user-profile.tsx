@@ -23,6 +23,9 @@ export function UserProfile() {
         </Avatar>
         <div className="text-center sm:text-left">
           <h2 className="text-3xl font-bold">{user.username}</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {user.points ? `${user.points} points` : "No points available"}
+          </p>
         </div>
       </div>
       <Card className="border dark:border-slate-800">
@@ -32,6 +35,10 @@ export function UserProfile() {
             <div className="grid grid-cols-3 gap-4 items-center py-2 border-b dark:border-slate-800">
               <span className="text-muted-foreground font-medium">Username:</span>
               <span className="col-span-2">{user.username}</span>
+              <span className="text-muted-foreground font-medium">Points:</span>
+              <span className="col-span-2">{user.points ? `${user.points} points` : "No points available"}</span>
+              <span className="text-muted-foreground font-medium">Email:</span>
+              <span className="col-span-2">{user.email}</span>
             </div>
             <div className="grid grid-cols-3 gap-4 items-center py-2">
               <span className="text-muted-foreground font-medium">User ID:</span>

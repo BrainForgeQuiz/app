@@ -91,7 +91,7 @@ export function LoginModal({ open, onOpenChange, onRegisterClick }: LoginModalPr
               )}
             </Button>
             <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Don't have an account?{" "}
               <button type="button" className="text-blue-600 hover:underline font-medium" onClick={onRegisterClick}>
                 Register
               </button>
