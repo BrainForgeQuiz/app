@@ -141,7 +141,7 @@ export function QuizLeaderboard({ limit = 10 }: QuizLeaderboardProps) {
             </span>
             {myPoints > 0 && (
               <span className="flex items-center gap-1 text-sm dark:bg-slate-700 px-3 py-1 rounded-full">
-                <span>Your Points:</span>
+                <span>You: </span>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">{myPoints} pts</span>
               </span>
             )}
