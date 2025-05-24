@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) {
       throw new Error('No token found in login response')
     }
-    toast.success("You have been logged in successfully")
+    toast.success("You logged in successfully")
     localStorage.setItem("token", token)
     await fetchUserInfo()
   }
