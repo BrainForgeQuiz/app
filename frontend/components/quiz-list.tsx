@@ -49,7 +49,7 @@ export function QuizList() {
   if (quizzes.length === 0) {
     return (
       <div className="text-center p-8 dark:bg-slate-800/50 rounded-lg">
-        <p className="text-muted-foreground mb-4">No quizzes available at the moment.</p>
+        <p className="text-muted-foreground my-4">No quizzes available at the moment.</p>
       </div>
     )
   }
