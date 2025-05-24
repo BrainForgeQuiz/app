@@ -27,6 +27,7 @@ export default function TextQuizPage() {
   const [gameToken, setGameToken] = useState<string | null>(null)
   const [qLength, setQLength] = useState<number>(0)
   const [quizCompleted, setQuizCompleted] = useState(false)
+  const [points, setPoints] = useState({ pointsBefore: 0, pointsAfter: 0 })
   const [currentQuestion, setCurrentQuestion] = useState<Question>()
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -89,7 +90,7 @@ export default function TextQuizPage() {
     try {
       const response = await checkAnswer(currentQuestion?.id as string, gameToken, answer)
       setGameToken(response.data)
-      if(response && response.gameStatus !== null) {
+      if (response && response.gameStatus !== null) {
         setQuestions((prev) => {
           const prevEntry = prev[currentQuestion?.id as string] || { question: currentQuestion?.question ?? "", right: 0, wrong: 0 }
           return {
@@ -111,6 +112,7 @@ export default function TextQuizPage() {
         }
         setCurrentQuestion({ id: questionData.id, question: questionData.question })
       } else if (response.gameStatus === 1) {
+        setPoints(response.data)
         handleCompleteQuiz()
       }
       setCurrentQuestionIndex((prev) => prev + 1)
@@ -191,6 +193,12 @@ export default function TextQuizPage() {
                     </div>
                   </div>
                 ))}
+                {points && (
+                <div className="flex flex-col items-center justify-center">
+                  <p className="text-lg font-semibold mb-2">{points.pointsBefore} pts -&gt; {points.pointsAfter} pts</p>
+                  <p className="text-md">You gained {points.pointsAfter - points.pointsBefore} points!</p>
+                </div>
+              )}
               </div>
 
             </div>
