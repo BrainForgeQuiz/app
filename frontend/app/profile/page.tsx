@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { useAuthModal } from "@/context/auth-modal-context"
@@ -12,7 +12,7 @@ import { TextQuizCreator } from "@/components/quiz-creator"
 import { UserQuizList } from "@/components/user-quiz-list"
 import { QuizLeaderboard } from "@/components/quiz-leaderboard"
 
-export default function Profile() {
+function ProfileContent() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const { openLogin } = useAuthModal()
   const searchParams = useSearchParams()
@@ -109,5 +109,13 @@ export default function Profile() {
         </Tabs>
       ) : null}
     </div>
+  )
+}
+
+export default function Profile() {
+  return (
+    <Suspense>
+      <ProfileContent />
+    </Suspense>
   )
 }
