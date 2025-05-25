@@ -33,6 +33,18 @@ export class QuizController {
     return this.quizService.create(createQuizDto, req.user?.id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  findAllForUser(@Req() req: Request) {
+    if (!req.user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+    return this.quizService.findOneByUserId(req.user.id);
+  }
+
   @Get()
   findAll() {
     return this.quizService.findAll();
